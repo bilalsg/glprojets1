@@ -1,64 +1,53 @@
 "use client"
 import React from 'react'
 import Typed from 'react-typed'
-import ReactPlayer from  'react-player'
-import Image from 'next/image'
-import Services from './Services'
+import Button from '@/components/Button'
 const Herosection = () => {
   return (
     <>
-    <div className='text-white w-full flex bg-black relative  '>
+    <div className='text-white w-full flex  relative  '>
+    <div className="absolute z-[0] w-[50%] h-[50%] right-20 bottom-20 blue__gradient" />
+    <div className="absolute z-[0] w-[50%] h-[50%] left-0 -top-20 blue__gradient" />
+
       <div className='py-12  w-1/2 h-screen mx-auto flex flex-col justify-center z-20 relative'>
-          <p className='text-[#00df9a] font-bold p-2 z-20'>
-            GROWING WITH DATA ANALYTICS
-          </p>
-          <h1 className='md:text-7xl sm:text-6xl text-4xl font-bold md:py-6 z-20'>
-            Grow with data.
+            <div className="relative w-[400px] rounded-full px-3 py-1 text-sm leading-6 z-40 text-white ring-1 ring-white/40 hover:ring-white/60">
+                Announcing our next round of funding.{' '}
+                <a href="#" className="font-semibold text-red-600">
+                  <span className="absolute inset-0" aria-hidden="true" />
+                  Read more <span aria-hidden="true">&rarr;</span>
+                </a>
+            </div>
+          <h1 className='md:text-7xl text-white sm:text-6xl text-4xl font-bold md:py-6 z-20'>
+            GET MY OWN <span className='text-red-700'>LAWYER.</span>
           </h1>
-          <div className='flex  items-center'>
-            <p className='md:text-5xl sm:text-4xl text-xl font-bold py-4 z-20'>
-              Fast, flexible 
+          <div className='flex  items-center z-10 '>
+            <p className='md:text-5xl sm:text-4xl text-xl font-bold py-4 '>
+              Trust,Lawalty 
             </p>
-            <Typed
-            className='md:text-5xl sm:text-4xl text-xl font-bold md:pl-2 pl-1 z-20'
-              strings={['LAW', 'JUSTICE', 'PROFESSIONAL']}
-              typeSpeed={120}
-              backSpeed={140}
-              loop
-            />
+            <div>
+              <Typed
+                className='md:text-5xl sm:text-4xl text-xl font-bold md:pl-2 pl-1 z-20'
+                strings={['LAW', 'JUSTICE', 'PROFESSIONAL']}
+                typeSpeed={120}
+                backSpeed={140}
+                loop
+              />
+            </div>
+            
           </div>
-          <p className='md:text-2xl text-xl font-bold text-white z-20'>Monitor your data analytics to increase revenue for BTB, BTC, & SASS platforms.</p>
-          <button className='bg-[#00df9a] w-[200px] rounded-md font-medium my-6  py-3 text-black'>Get Started</button>
-          <Services className1='right-16 bottom-16 filter blur-xl' className2=' bottom-16 left-16 filter blur-xl' className3='filter blur-xl'/>
+          <p className='md:text-2xl text-xl font-bold text-white z-20  '>Profetional online platform that allows you to pick your own lawyer</p>
+          <Button />
 
       </div>
-      <div className="grid grid-rows-3 w-1/2 grid-flow-col gap-4 py-20">
-      <div className="row-span-3 col-span-2 container  rounded-xl bg-blue-200 relative">
-        <Image src="/law1.jpg" alt="law" className="cover-fit" layout="fill" objectFit="cover" />
+      <div className='brightness-60 hover:brightness-80 transition duration-200 ease-in-out hover:brightness-100 sm:w-1/2 relative w-0 py-9 z-10 ' style={{ 
+          backgroundImage: 'url("/law6.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          }}>
+         
       </div>
-
-      <div className="col-span-2 rounded-xl bg-white" style={{ 
-        backgroundImage: 'url("/law5.jpg")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        }}>
-        {/* Your content goes here */}
-        </div>
-
-
-        <div className="row-span-2 rounded-xl col-span-2  " 
-        style={{ 
-            backgroundImage: 'url("/law4.jpg")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            }}
-        >
-        <div className="col-span-2 rounded-xl bg-white">
-        
-        </div>
-
-        </div>
-      </div>
+      
+      
      
     </div> 
     </>
