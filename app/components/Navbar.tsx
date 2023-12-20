@@ -1,5 +1,6 @@
 "use client"
-import Button from '@/elements/Button';
+import Button from '@/components/Button';
+import { SelectDemo } from '@/components/Select';
 import React, { ReactNode, useState } from 'react';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
 interface NavbarProps {

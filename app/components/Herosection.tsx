@@ -1,7 +1,9 @@
 "use client"
 import React from 'react'
 import Typed from 'react-typed'
-import Button from '@/elements/Button'
+import Services from './Services'
+import { Select } from '@/components/ui/select'
+import Button from '@/components/Button'
 const Herosection = () => {
   return (
     <>
@@ -11,7 +13,7 @@ const Herosection = () => {
 
       <div className='py-12  w-1/2 h-screen mx-auto flex flex-col justify-center z-20 relative'>
             <div className="relative w-[400px] rounded-full px-3 py-1 text-sm leading-6 z-40 text-white ring-1 ring-white/40 hover:ring-white/60">
-                random text will see about it later.{' '}
+                Announcing our next round of funding.{' '}
                 <a href="#" className="font-semibold text-red-600">
                   <span className="absolute inset-0" aria-hidden="true" />
                   Read more <span aria-hidden="true">&rarr;</span>
@@ -50,6 +52,7 @@ const Herosection = () => {
       
      
     </div> 
+    <Select />
     </>
   )
 }
