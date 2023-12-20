@@ -1,5 +1,5 @@
 {
-  "name": "glprojets1",
+  "name": "coll",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,11 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.0.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "framer-motion": "^10.16.12",
+    "lucide-react": "^0.294.0",
     "next": "14.0.3",
+    "radix-ui": "^1.0.1",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^4.12.0",
-    "react-typed": "^1.2.0"
+    "react-slot": "^0.1.2",
+    "react-typed": "^1.2.0",
+    "tailwind-merge": "^2.1.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/node": "^20",
