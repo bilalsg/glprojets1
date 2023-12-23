@@ -8,8 +8,7 @@ import Testimonials from './components/Testomonials'
 export default function Home() {
   return (
     <main className="flex min-h-screen bg-black flex-col w-full items-center justify-between overflow-hidden ">
-      <section className='px-[100px] flex flex-col w-full items-center justify-between'>
-        <Navbar className='z-20 ' />
+      <section className='sm:px-[100px] px-0 flex flex-col w-full items-center justify-between'>
         <Herosection />
       </section>
       
