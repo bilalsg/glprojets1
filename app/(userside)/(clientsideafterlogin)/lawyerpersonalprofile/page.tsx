@@ -1,4 +1,4 @@
-import Googlemap from '@/components/Googlemap'
+import Tabscomp from '@/components/Tabs';
 import React from 'react'
 
 const page = () => {
@@ -10,7 +10,7 @@ const page = () => {
     <div>
      <div
       
-        className="flex flex-col items-center px-[100px] rounded-md pt-28  shadow md:flex-row  dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+        className="flex flex-col items-center xl:px-[100px] sm:px-[50px] px-[20px] rounded-md pt-28  shadow md:flex-row  dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
       > 
         
         <img
@@ -38,7 +38,7 @@ const page = () => {
         </div>
       
       </div>
-      <Googlemap coordinates={coordinates} />
+      <Tabscomp />
     </div>
   )
 }
