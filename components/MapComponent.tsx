@@ -10,7 +10,7 @@ interface MapComponentProps {
 
 const MapComponent: FC<MapComponentProps> = ({ coordinates }) => {
   const mapContainerStyle = {
-    width: '100%',
+    width:  '100%',
     height: '400px',
   };
 
@@ -27,11 +27,13 @@ const MapComponent: FC<MapComponentProps> = ({ coordinates }) => {
   }
 
   return (
-    <LoadScript googleMapsApiKey={googleMapsApiKey}>
-      <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={15}>
-        <Marker position={center} />
-      </GoogleMap>
-    </LoadScript>
+    <section className=''>
+      <LoadScript googleMapsApiKey={googleMapsApiKey} >
+        <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={15}>
+          <Marker position={center} />
+        </GoogleMap>
+      </LoadScript>
+    </section>
   );
 };
 
