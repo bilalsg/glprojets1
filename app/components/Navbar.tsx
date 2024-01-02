@@ -5,7 +5,7 @@ import React, { ReactNode, useState } from 'react';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
 interface NavbarProps {
     className?: string; // Optional className prop of type string
-  }
+}
 const Navbar = ({className}:NavbarProps) => {
     const [nav, setNav] = useState(false);
 
