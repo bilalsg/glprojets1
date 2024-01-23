@@ -3,12 +3,17 @@ import Button from '@/components/Button';
 import { SelectDemo } from '@/components/Select';
 import React, { ReactNode, useState } from 'react';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
+import { useTranslation } from 'react-i18next'
+
 interface NavbarProps {
     className?: string; // Optional className prop of type string
 }
 const Navbar = ({className}:NavbarProps) => {
+    const [t, i18n] = useTranslation("global")
     const [nav, setNav] = useState(false);
-
+    function handleLanguageChange(lang: string){
+        i18n.changeLanguage(lang)
+      }
     const handleNav = () => {
       setNav(!nav);
     };
@@ -21,34 +26,39 @@ const Navbar = ({className}:NavbarProps) => {
 
         </div>
         <div className='flex gap-4 justify-center items-center'>
-            <ul className='hidden md:flex'>
+            <ul className='hidden md:flex '>
 
             <li className='p-4'><a href='/'>Home</a></li>
             <li className='p-4'><a href='/lawyers'>Lawyers</a></li>
             <li className='p-4'>About us</li>
             <li className='p-4'>Contact</li>
-
+            <li className='flex'>
+                <button className='p-3 border border-gray-600' onClick={()=> handleLanguageChange('en')}>Fr</button>
+                <button className='p-3 border border-gray-600' onClick={()=> handleLanguageChange('ar')}>عر</button>
+            </li>
             </ul>
            <Button />
+           
 
                     
         </div>
         <div onClick={handleNav} className='block md:hidden'>
             {nav ? <AiOutlineClose size={20}/> : <AiOutlineMenu size={20} />}
         </div>
-        <ul className={nav ? 'fixed  md:hidden block left-0 h-screen top-0 w-[60%] z-30 border-r border-r-gray-900 bg-[#000300] ease-in-out duration-500' : 'ease-in-out duration-500 fixed left-[-100%]'}>
+        <ul className={nav ? 'fixed md:hidden block left-0 h-screen top-0 w-[60%] z-30 border-r border-r-gray-900 bg-[#000300] ease-in-out duration-500' : 'ease-in-out duration-500 fixed left-[-100%]'}>
             <div className=' flex justify-start '>
                 <h1 className=' text-3xl font-bold text-red-700'>DZ-</h1>
                 <h1 className=' text-3xl font-bold text-white'>MOUHAMI</h1>
-                
-
             </div>
             <li className='p-4 border-b border-gray-600'>Home</li>
             <li className='p-4 border-b border-gray-600'>Company</li>
             <li className='p-4 border-b border-gray-600'>Resources</li>
             <li className='p-4 border-b border-gray-600'>About</li>
             <li className='p-4'>Contact</li>
-        </ul>
+            <li className='pl-4 pt-96'>
+                <button className='p-3 border border-gray-600' onClick={()=> handleLanguageChange('en')}>Français</button>
+                <button className='p-3 border border-gray-600' onClick={()=> handleLanguageChange('ar')}>عربية</button></li>
+            </ul>
   </div>
   )
 }

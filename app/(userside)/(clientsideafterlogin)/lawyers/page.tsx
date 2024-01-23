@@ -1,13 +1,14 @@
 "use client"
-import { useEffect } from 'react'
 
 import Lawercard from '@/app/(userside)/(clientsideafterlogin)/lawyerpersonalprofile/Lawercard'
 import { url } from 'inspector'
 import React from 'react'
 import Footer from '@/app/components/Footer'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const page = () => {
+  const [t, i18n] = useTranslation("global")
     const mockupdata = {
       lawyers : [
         {
@@ -146,7 +147,7 @@ const page = () => {
     const categoryMockUpData = {
       data : ["Droit administratif", "Droit commercial", "Droit de l'environnement", "Droit de l'immobilier"]
     }
-
+    
     const [filter, setFilter] = useState(false)
     const [order, setOrder] = useState(false)
     const [selectedRegion, setSelectedRegion] = useState("");
@@ -160,7 +161,7 @@ const page = () => {
     const toggleFilter = () =>{
       setFilter(!filter);
     }
-    
+
     const toggleOrder = () => {
       setOrder(!order);
     };
@@ -228,39 +229,38 @@ const page = () => {
     });
     
   return (
-    <div className='h-full pt-28 sm:px-4 md:px-8 lg:px-12 xl:px-20 2xl:px-32 w-full bg-black' >
-      <div>
-        <h1 className='pb-5 pt-7 flex border-b-2 text-white font-semibold text-3xl'>Our lawyers</h1>
-        <div className='flex gap-5 justify-end'>
-          <button onClick={toggleOrder} className='bg-[#ADA9A7] hover:bg-red-700 relative rounded-md font-medium my-6 py-3 px-10 text-white text-sm'>Order By</button>
-          <button onClick={toggleFilter}  className='bg-[#ADA9A7] hover:bg-red-700  rounded-md font-medium my-6 py-3 px-10 text-white text-sm'>Filter
-          </button>
-          <input type='text' onChange={handleNameChange} placeholder='search by name...' className='font-medium rounded-md my-6 py-3 px-10 text-sm'/>
+    <div className='h-full pt-28 px-6 md:px-8 lg:px-12 xl:px-20 2xl:px-32' >
+      <div className='text-gray-200'>
+        <h1 className='pb-4 pt-7 flex border-b-2 font-semibold text-xl'>{t("lawyers.ourLawyers")}</h1>
+        <div className='flex gap-1 md:gap-5 flex-wrap justify-end'>
+          <button onClick={toggleOrder} className={`bg-[#ADA9A7] hover:bg-red-700 relative rounded-md font-medium my-6 py-3 px-10 text-white text-xs ${order ? 'bg-red-700' : ''}`}> {t("lawyers.orderBy")} </button>
+          <button onClick={toggleFilter}  className={`bg-[#ADA9A7] hover:bg-red-700  rounded-md font-medium my-6 py-3 px-10 text-white text-xs ${filter ? 'bg-red-700': ''}`}> {t("lawyers.filter")} </button>
+          <input type='text' onChange={handleNameChange} placeholder={t("lawyers.searchByName")} className='font-medium text-black rounded-md my-6 py-3 px-10 text-xs'/>
         </div>
       </div>
       {filter ? (
-        <div className='flex gap-9 border-y-2 py-6'>
-          <div className='text-white flex gap-3 '>
-            <span> Region </span>
-            <select value={selectedRegion} onChange={handleRegionChange} className='text-black rounded-md text-sm'>
-              <option value="">All</option>
+        <div className='flex gap-9 flex-wrap border-y-2 py-6 text-white text-xs'>
+          <div className='flex gap-2 items-center'>
+            <span> {t("lawyers.region")} </span>
+            <select value={selectedRegion} onChange={handleRegionChange} className='text-black rounded-md px-2 py-1'>
+              <option value=""> {t("lawyers.all")} </option>
               <option value="annaba">Annaba</option>
               <option value="khanchela">Khanchela</option>
             </select>
           </div>
-          <div className='text-white flex gap-3 '>
-            <span> Category </span>
-            <select value={selectedCategory} onChange={handleCategoryChange} className='text-black rounded-md text-sm'>
-              <option value="">All</option>
+          <div className='flex gap-2 items-center'>
+            <span> {t("lawyers.category")} </span>
+            <select value={selectedCategory} onChange={handleCategoryChange} className='text-black rounded-md px-2 py-1'>
+              <option value="">{t("lawyers.all")}</option>
               {categoryMockUpData.data.map((category: string, index: number) => (
                 <option key={index}>{category}</option>
               ))}
             </select>
           </div>
-          <div className='text-white flex gap-3 '>
-            <span> Rating </span>
-            <select value={selectedRating} onChange={handleRatingChange} className='text-black rounded-md text-sm'>
-              <option value="">All</option>
+          <div className='flex gap-2 items-center'>
+            <span> {t("lawyers.rating")} </span>
+            <select value={selectedRating} onChange={handleRatingChange} className='text-black rounded-md px-2 py-1'>
+              <option value="">{t("lawyers.all")}</option>
               <option value="0">0</option>
               <option value="1">1</option>
               <option value="2">2</option>
@@ -272,22 +272,22 @@ const page = () => {
         </div>
       ) : null}
       {order ? (
-        <div className='flex gap-9 border-y-2 py-6 text-white'>
+        <div className='flex text-white flex-wrap text-xs gap-9 border-y-2 py-6'>
           <input type='radio' id='e1' value='default' className='hidden' onClick={()=>(setAlphaFN(false), setAlphaLN(false), setRating(false))}/>
           <label htmlFor="e1" className={`cursor-pointer py-1 px-4 inline-block ${ !alphaFN && !alphaLN && !rating ? 'border-b-2' : ''}`}>Default</label>
 
           <input type='radio' id='e2' value='f-name' className='hidden' onClick={toggleAlphaFN}/>
-          <label htmlFor="e2" className={`cursor-pointer py-1 px-4 inline-block ${alphaFN ? 'border-b-2' : ''}`}>First Name</label>
+          <label htmlFor="e2" className={`cursor-pointer py-1 px-4 inline-block ${alphaFN ? 'border-b-2' : ''}`}>{t("lawyers.firstName")}</label>
 
-          <input type='radio' id='e3' value='l-name' className='hidden' onClick={toggleAlphaLN}/>
-          <label htmlFor="e3" className={`cursor-pointer py-1 px-4 inline-block ${alphaLN ? 'border-b-2' : ''}`}>Last Name</label>
+          <input type='radio' id='e3' value='l-name' className='hidden'  onClick={toggleAlphaLN}/>
+          <label htmlFor="e3" className={`cursor-pointer py-1 px-4 inline-block ${alphaLN ? 'border-b-2' : ''}`}>{t("lawyers.lastName")}</label>
           
-          <input type='radio' id='e4' value='rating' className='hidden' onClick={toggleRating} />
-          <label htmlFor="e4" className={`cursor-pointer py-1 px-4 inline-block ${rating ? 'border-b-2' : ''}`}>Rating</label>
+          <input type='radio' id='e4' value='rating' className='hidden'  onClick={toggleRating} />
+          <label htmlFor="e4" className={`cursor-pointer py-1 px-4 inline-block ${rating ? 'border-b-2' : ''}`}>{t("lawyers.rating")}</label>
         </div>
       ) : null}
       
-      <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-2 pt-12'>
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 justify-between py-10'>
         {sortedLawyers.map(lawyer => (
           <Lawercard
             key={lawyer.id}
@@ -310,4 +310,4 @@ const page = () => {
   )
 }
 
-export default page
+export default page;

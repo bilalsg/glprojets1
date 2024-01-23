@@ -27,13 +27,13 @@ const Herosection = () => {
               Trust,Lawalty 
             </p>
             <div className=''>
-              <Typed
+              {/* <Typed
                 className='md:text-5xl sm:text-4xl text-xl font-bold md:pl-2 pl-1 z-20'
                 strings={['LAW', 'JUSTICE', 'PROFESSIONAL']}
                 typeSpeed={120}
                 backSpeed={140}
                 loop
-              />
+              /> */}
             </div>
             
           </div>

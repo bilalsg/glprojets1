@@ -1,0 +1,14 @@
+{"lawyers" :{
+    "ourLawyers": "Our lawyers",
+    "orderBy": "Order By",
+    "filter": "Filter",
+    "searchByName": "Search by name...",
+    "region": "Region",
+    "all": "All",
+    "category": "Category",
+    "rating": "Rating",
+    "default": "Default",
+    "firstName": "First Name",
+    "lastName": "Last Name"
+  }
+  }

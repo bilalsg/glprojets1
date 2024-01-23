@@ -1,8 +1,13 @@
-'use client'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import Googlemap from '@/components/Googlemap';
 import React, { useState } from 'react';
+import Comment from '@/components/Comment';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import { Divide } from 'lucide-react';
+
+
 
 const coordinates = {
   lat: 40.7128,
@@ -17,16 +22,38 @@ interface tabsCompProps {
   description : string;
   adress: string;
   experiences : string[];
-  cv : string | null;
   Reviews : Review[];
+  cv?: string | null;
+  onClickDay: (date: Date) => void;
 }
-
-const Tabscomp :React.FC<tabsCompProps> = (props) => {
-  const {adress,cv, description, experiences, Reviews} = props
+const disabledDays = [new Date(2024,1,1), new Date(2024,4,13)]
+const Tabscomp :React.FC<tabsCompProps>  = (props) => {
+  const { adress,cv, description, experiences, Reviews} = props
   const [forceRender, setForceRender] = useState(false);
-
+  const [date, setDate] = useState(new Date());
   const handleTabSelect = () => {
     setForceRender(true);
+  };
+
+
+  const tileDisabled = ({ date, view }: { date: Date; view: string }) => {
+    const currentDate = new Date();
+  
+    if (view === 'month' && (date.getDay() === 5 || date.getDay() === 6)) {
+      return true;
+    }
+  
+    if (view === 'month' && date < currentDate) {
+      return true;
+    }
+  
+    if (disabledDays.some((disabledDate) => {
+          return disabledDate.toLocaleDateString() === date.toLocaleDateString();
+        })) {
+        return true;
+      }
+  
+    return false;
   };
 
   return (
@@ -40,35 +67,54 @@ const Tabscomp :React.FC<tabsCompProps> = (props) => {
         </TabList>
         <div className='border-2 rounded-md rounded-tl-none'>
 
-          <TabPanel >
-            <div className='p-6 sm:w-3/4'>
-              <p className='text-white'>{description}</p>
-              <a href={cv} className='text-white'>click here to see CV</a>
-              <h2 className='text-white'>Experiences</h2>
-              <ul className='text-white'>{
-                experiences.map((exp)=>(
-                  <li>{exp}</li>
-                ))
-              }</ul>
+        <TabPanel>
+          <div className='p-10 bg-white'>
+            <p className='text-black  w-fit'>{description}</p>
+            {cv ? (
+              <a href={cv} target='_blank' className='block text-black w-fit underline mt-4'>
+                Click here to see CV
+              </a>
+            ) : null}
+            <h2 className='text-black mt-4 text-lg'>Experiences :</h2>
+            <ul className='text-black list-disc ml-6'>
+              {experiences.map((exp, index) => (
+                <li key={index} className='mb-2'>
+                  {exp}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </TabPanel>
+
+          <TabPanel>
+            <div className='p-10 bg-white'>
+              <h5 className='text-black'>Adress : </h5>
+              <p className='text-black'>{adress}</p>
+              <Googlemap coordinates={coordinates} />
             </div>
           </TabPanel>
 
           <TabPanel>
-            <h5 className='text-white'>Adress : </h5>
-            <p className='text-white'>{adress}</p>
-            <Googlemap coordinates={coordinates} />
+            <Calendar
+              calendarType='hebrew'
+              tileDisabled={tileDisabled}
+              onClickDay={(date) => {
+                setDate(date);
+                props.onClickDay(date);
+              }}
+            />
           </TabPanel>
 
           <TabPanel>
-          </TabPanel>
-
-          <TabPanel>
-                {Reviews.map((review)=>(
-                  <div className="py-3 px-4" >
-                    <h1 className='text-gray-400'>{review.username}</h1>
-                    <p className='text-white'>{review.comment}</p>
+            <div className='p-10 bg-white'>
+                  <div>
+                    <input type="text" name="comment" id="comment" placeholder='comment here'/>
+                    <button>add</button>
                   </div>
+                {Reviews.map((review, index)=>(
+                  <Comment key={index} username={review.username} comment={review.comment}/>
                 ))}
+            </div>
           </TabPanel>
         </div>
       </Tabs>
