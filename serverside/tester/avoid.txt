@@ -1,0 +1,23 @@
+If you're committed to building a Django project without using the ORM at all, you'll need to avoid several key Django functionalities and patterns that heavily rely on the ORM. Here's a list of things to avoid:
+
+models.py Definitions: Avoid defining models using Django's model syntax (class YourModel(models.Model)). This means not using any Django model fields (CharField, ForeignKey, ManyToManyField, etc.).
+
+Migration Commands: Do not use makemigrations and migrate commands, as they are designed to work with the ORM and handle database schema changes based on model definitions.
+
+QuerySet Operations: Avoid using Django QuerySets (YourModel.objects.filter(), YourModel.objects.get(), YourModel.objects.create(), etc.) as these are ORM-dependent and translate to SQL queries.
+
+Model Relationships and Joins: Avoid defining relationships between models (ForeignKey, ManyToManyField) and performing complex join operations using Django's ORM.
+
+Django Admin Interface: The Django admin site heavily relies on the ORM for CRUD (Create, Read, Update, Delete) operations on models. Avoid using it for managing data if you're not using the ORM.
+
+Signals and Model Methods: Django's signals (post_save, pre_save, etc.) and custom model methods (save(), delete(), etc.) operate within the ORM context and should be avoided if you're bypassing the ORM entirely.
+
+Forms and ModelForms: Django's ModelForm and form validation are built around the ORM. Avoid using them for creating or updating data if you're not using models.
+
+Django's Built-in Auth System: Django's authentication system (User model, login(), logout(), etc.) relies heavily on the ORM and should be avoided if you're bypassing the ORM.
+
+Admin Interface and Django Rest Framework (DRF): Avoid using Django Rest Framework and its serializers if you intend to build REST APIs without leveraging the ORM.
+
+Django's Middleware and Middleware-Dependent Features: Some middleware functionalities in Django are built around ORM operations or request/response handling based on ORM models.
+
+Building a Django project entirely without the ORM can be challenging, as many of Django's core features are tightly integrated with it. This approach might limit some of the powerful features and conveniences that Django offers. If you need to bypass the ORM for specific optimizations or database interactions, ensure you have a clear understanding of the trade-offs and the impact on the project's maintainability and compatibility with Django's ecosystem.
