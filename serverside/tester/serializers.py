@@ -17,7 +17,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class LawyerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lawyer
-        fields = ['id', 'username', 'email', 'date_of_birth', 'profile_picture','name','phone','adress','email','website','facebook'
+        fields = ['id', 'password','username', 'email', 'date_of_birth', 'profile_picture','name','phone','adress','email','website','facebook'
                   ,'twitter','linkedin','category','description','cv']
 
 class ReviewSerializer(serializers.ModelSerializer):
