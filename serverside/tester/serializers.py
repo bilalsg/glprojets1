@@ -37,3 +37,16 @@ class LawyerRegistrationSerializer(serializers.ModelSerializer):
 class LawyerAuthenticationSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
+
+class GoogleUserRegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GoogleUser
+        fields = ['username', 'email', 'test']  # Include other fields as needed
+        
+class GoogleUserLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    username = serializers.CharField()
+
+    def validate(self, data):
+        # You can perform additional validation logic if required
+        return data

@@ -131,13 +131,22 @@ class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
+from django.contrib.auth.hashers import make_password
 class LawyerRegistrationView(generics.CreateAPIView):
     serializer_class = LawyerRegistrationSerializer
 
     def post(self, request, *args, **kwargs):
+        raw_password = request.data.get('password')
+
+        # Hash the password using make_password
+        hashed_password = make_password(raw_password)
+
+        # Replace the 'password' field in request.data with the hashed password
+        request.data['password'] = hashed_password
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        print(user)
         return Response(LawyerSerializer(user).data, status=status.HTTP_201_CREATED)
 
 class LawyerAuthenticationView(generics.GenericAPIView):
@@ -160,3 +169,58 @@ class LawyerAuthenticationView(generics.GenericAPIView):
         else:
             return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
+class GoogleUserRegistrationView(generics.GenericAPIView):
+    serializer_class = GoogleUserRegistrationSerializer
+    
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Extract user information from the validated data
+        email = serializer.validated_data.get('email')
+        username = serializer.validated_data.get('username')
+
+        # Check if a user with the given email already exists
+        google_user, created = GoogleUser.objects.get_or_create(
+            email=email,
+            defaults={
+                'username': username,
+                'test': 'test_value',  # Add other fields as needed
+            }
+        )
+
+        return Response(GoogleUserRegistrationSerializer(google_user).data, status=status.HTTP_201_CREATED)
+
+class GoogleUserLoginView(generics.GenericAPIView):
+    serializer_class = GoogleUserLoginSerializer
+
+    def get_or_create_user_token(user):
+        if isinstance(user, Lawyer):
+            # Handle the token creation logic for Lawyer instances
+            token, created = Token.objects.get_or_create(user=user)
+        elif isinstance(user, GoogleUser):
+            # Handle the token creation logic for CustomUser instances
+            # You might need to adjust this based on how CustomUser is set up in your project
+            token, created = Token.objects.get_or_create(user=user)
+        else:
+            # Handle other user types if necessary
+            token, created = None, False
+
+        return token, created
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Extract user information from the validated data
+        email = serializer.validated_data.get('email')
+        username = serializer.validated_data.get('username')
+
+        # Check if a user with the given email already exists
+        google_user = GoogleUser.objects.get(email=email, username=username)
+        google_user_id = google_user.id
+
+        # Generate or get an existing token for the user
+        
+
+        return Response({'token': google_user_id, 'message': 'Login successful'}, status=status.HTTP_200_OK)

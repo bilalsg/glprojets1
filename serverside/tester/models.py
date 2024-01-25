@@ -48,6 +48,12 @@ class Calender(models.Model):
     empty = models.BooleanField(default=True)
     inavailable = models.BooleanField(default=False)
 
+class GoogleUser(AbstractUser):
+    test = models.CharField(max_length=255, blank=True, null=True)
+    email = models.EmailField()
+    def __str__(self):
+        return self.username
+
 Lawyer._meta.get_field('groups').remote_field.related_name = 'customuser_groups'
 Lawyer._meta.get_field('user_permissions').remote_field.related_name = 'customuser_user_permissions'
 

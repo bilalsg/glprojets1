@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    
+    'corsheaders',
     'tester.apps.TesterConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -131,6 +132,7 @@ AUTH_USER_MODEL = 'tester.Lawyer'
 
 AUTHENTICATION_BACKENDS = [
     'tester.backends.LawyerBackend',  # Replace 'yourapp' with your actual app name
+    'tester.backends.GoogleUserBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -141,3 +143,8 @@ REST_FRAMEWORK = {
         # Add other authentication classes if needed
     ],
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Add the origin of your Next.js app
+    # Add more origins as needed
+]
