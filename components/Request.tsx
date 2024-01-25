@@ -16,6 +16,35 @@ interface RequestProps {
 }
 
 const WorkRequestDetails: React.FC<RequestProps> = ({id, category, description, budget, appointment, userfname, userlname, email, phone}) => {
+  const handleAccept = async () => {
+    try {
+      const response = await fetch('your-backend-api/accept', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+        }),
+      });
+    } catch (error) {
+      console.error('Error accepting request:', error);
+    }
+  };
+
+  const handleRefuse = async () => {
+    try {
+      const response = await fetch('your-backend-api/refuse', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+        }),
+      });
+    } catch (error) {
+      console.error('Error refusing request:', error);
+    }
+  };
   return (
       <div className="self-start bg-gray-100 w-fit p-6 rounded-md shadow-lg text-sm">
         <h2 className="text-lg text-center font-bold mb-4">Work Request</h2>
@@ -33,7 +62,7 @@ const WorkRequestDetails: React.FC<RequestProps> = ({id, category, description, 
         </div>
         <div className="mb-3 flex gap-2">
           <h5 className="font-bold">Appointment Date:</h5>
-          <p>{appointment.date.getDate()} {appointment.date.getMonth() + 1} {appointment.date.getFullYear()} </p>
+          <p>{appointment.date.toLocaleDateString()} </p>
         </div>
         <div className="mb-3 flex gap-2">
           <h5 className="font-bold">Name:</h5>
@@ -48,10 +77,10 @@ const WorkRequestDetails: React.FC<RequestProps> = ({id, category, description, 
           <p>{phone}</p>
         </div>
         <div className='text-xs self-center'>
-          <button className="bg-green-500 text-white font-semibold py-2 px-4 rounded-md mr-2 hover:bg-green-600">
+          <button onClick={handleAccept} className="bg-green-500 text-white font-semibold py-2 px-4 rounded-md mr-2 hover:bg-green-600">
             Accept
           </button>
-          <button className="bg-red-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-600">
+          <button onClick={handleRefuse} className="bg-red-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-600">
             Refuse
           </button>
         </div>

@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react'
+import { useState, useEffect} from 'react'
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import Request from '@/components/Request';
@@ -19,15 +19,17 @@ interface Appointment {
     userlname: string;
     email: string;
     phoneNumber: string;
-  }
+};
 
 const LawyerDashboard = () => {
     const [page1, setPage1] = useState(true)
     const [page2, setPage2] = useState(false)
+    const [details, setDetails] = useState(false)
+    const [selectedApp, setSelectedApp] = useState<Appointment>()
     const [selectedDate, setSelectedDate] = useState<Date | null>();
     const [appointments, setAppointments] = useState<Appointment[]>([]);
 
-    const handleDateClick = async (date: Date) => {
+    const handleDateClick = (date: Date) => {
         setSelectedDate(date);
         const filteredAppointments = requests.filter(
             (appointment) => appointment.appointment.date.toDateString() === date.toDateString()
@@ -35,6 +37,14 @@ const LawyerDashboard = () => {
           setAppointments(filteredAppointments);
           console.log(requests)
           console.log(filteredAppointments)
+    };
+    useEffect(() => {
+        const today = new Date();
+        handleDateClick(today);
+    }, []);
+    const detailsApp = (appointment : Appointment)=>{
+        setDetails(!details);
+        setSelectedApp(appointment);
     };
 
     const tileDisabled= ({ date, view }: { date: Date; view: string }) => {
@@ -129,7 +139,7 @@ const LawyerDashboard = () => {
             email: "d.mechraoui8@gmail.com",
             phoneNumber: "0549412832",
         }
-    ]
+    ];
 
     return ( 
         <div className={`h-full flex flex-col px-6 md:px-8 lg:px-10  2xl:px-32 items-center justify-center`}>
@@ -140,8 +150,9 @@ const LawyerDashboard = () => {
                     <li className={`text-center`}><button> <LogOutIcon /> </button></li>
                 </ul>
             </div>
+            <div>
             {page1 ? (
-                <div className='text-black h-[100vh] w-[100vh] flex items-center justify-center'>
+                <div className='text-black h-[100vh] w-[100vw] flex flex-wrap gap-10 items-center justify-center'>
                     <div>
                         <Calendar
                             calendarType='hebrew'
@@ -151,12 +162,29 @@ const LawyerDashboard = () => {
                     </div>
                     <div>
                         {selectedDate && (
-                            <div className='bg-white rounded-md p-5 flex-col gap-2' >
-                                <h2>Appointments on {selectedDate.toLocaleDateString()}:</h2>
+                            <div className='bg-white overflow-scroll rounded-sm p-5 h-[280px] w-[350px]' >
+                                <h2 className='text-center text-red-600 text-lg'>Appointments on {selectedDate.toLocaleDateString()}:</h2>
                                 <ul>
-                                    {appointments.map((appointment) => (
-                                    <li key={appointment.id}>
-                                        <button>{`${appointment.appointment.time}`} : {`${appointment.userfname} ${appointment.userlname}`}</button>
+                                {appointments
+                                    .sort((a, b) => {
+                                    const timeA = Number(a.appointment.time.split(':')[0]) * 60 + Number(a.appointment.time.split(':')[1]);
+                                    const timeB = Number(b.appointment.time.split(':')[0]) * 60 + Number(b.appointment.time.split(':')[1]);
+                                    return timeA - timeB;
+                                    })
+                                    .map((appointment, index) => (
+                                    <li key={appointment.id} className={`${index % 2 === 0 ? 'bg-gray-200' : ''}`}>
+                                        <button onClick={() => detailsApp(appointment)}>
+                                        {`${appointment.appointment.time}`} : {`${appointment.userfname} ${appointment.userlname}`}
+                                        </button>
+                                        {details && appointment === selectedApp ? (
+                                        <div>
+                                            <p>Category: {appointment.category}</p>
+                                            <p>Description: {appointment.description}</p>
+                                            <p>Budget: {appointment.budget}</p>
+                                            <p>Email: {appointment.email}</p>
+                                            <p>Phone Number: {appointment.phoneNumber}</p>
+                                        </div>
+                                        ) : null}
                                     </li>
                                     ))}
                                 </ul>
@@ -166,7 +194,7 @@ const LawyerDashboard = () => {
                 </div>
             ) :
             page2 ? (
-                <div className="flex flex-wrap justify-center pt-28 pb-10 gap-9">
+                <div className="text-black h-[100vh] w-[100vw] flex flex-wrap gap-10 items-center justify-center m">
                     {
                         requests.map(request => (
                             <Request id={request.id}  description={request.description} budget={request.budget} category={request.category} appointment={request.appointment} userfname={request.userfname} userlname={request.userlname} email={request.email} phone={request.phoneNumber} />
@@ -176,6 +204,7 @@ const LawyerDashboard = () => {
             ): 
             null
             }
+            </div>
         </div>
      );
 }
