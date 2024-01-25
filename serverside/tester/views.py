@@ -8,6 +8,7 @@ from django.shortcuts import render
 # Create your views here.
 
 def test(request):
+
     # print("hellos")
     # from .models import Lawyer
     # import string
@@ -78,14 +79,18 @@ def test(request):
     # for row in data:
     #     formatted_string = re.sub(r'[^a-zA-Z ]', '', row['full_name']).lower().replace(" ", "_")
     #     random_password = generate_random_password()
+    #     from django.contrib.auth.hashers import make_password
+    #     hashed_password = make_password(random_password)
     #     list_of_rpswd.append({'email':random_email,"pass":random_password})
+    #     print(formatted_string)
+    #     print(list_of_rpswd)
     #     instance = Lawyer(
     #         name=row['full_name'],
     #         email=row['email'],
     #         adress=row['address'],
     #         category = row['categories'],
     #         username = formatted_string,
-    #         password = random_password
+    #         password = hashed_password
     #         # Add other fields as needed
     #     )
     #     instance.save()
@@ -93,36 +98,65 @@ def test(request):
     #     # instance.username = formatted_string
     return render(request,'main.html')
 
-from django.contrib.auth.models import Group, User
-from rest_framework import permissions, viewsets
-
+# from django.contrib.auth.models import Group, User
+from rest_framework import permissions, viewsets,status,generics,views
+from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import get_user_model ,authenticate
 from .serializers import *
 from .models import *
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+# class UserViewSet(viewsets.ModelViewSet):
+#     """
+#     API endpoint that allows users to be viewed or edited.
+#     """
+#     queryset = User.objects.all().order_by('-date_joined')
+#     serializer_class = UserSerializer
+#     permission_classes = [permissions.IsAuthenticated]
 
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
+# class GroupViewSet(viewsets.ModelViewSet):
+#     """
+#     API endpoint that allows groups to be viewed or edited.
+#     """
+#     queryset = Group.objects.all()
+#     serializer_class = GroupSerializer
+#     permission_classes = [permissions.IsAuthenticated]
 
 class LawyerViewSet(viewsets.ModelViewSet):
     queryset = Lawyer.objects.all()
     serializer_class = LawyerSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
+class LawyerRegistrationView(generics.CreateAPIView):
+    serializer_class = LawyerRegistrationSerializer
 
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(LawyerSerializer(user).data, status=status.HTTP_201_CREATED)
+
+class LawyerAuthenticationView(generics.GenericAPIView):
+    serializer_class = LawyerAuthenticationSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        usernamee=serializer.validated_data['username']
+        passwordd=serializer.validated_data['password']
+        print(usernamee)
+        print(passwordd)
+        user = authenticate(
+            username=serializer.validated_data['username'],
+            password=serializer.validated_data['password']
+        )
+        if user:
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key})
+        else:
+            return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 

@@ -19,8 +19,7 @@ from tester import views
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
+
 router.register(r'Lawyer', views.LawyerViewSet)
 router.register(r'Review', views.ReviewViewSet)
 
@@ -28,7 +27,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('tester.urls')),
  path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('register/', views.LawyerRegistrationView.as_view(), name='lawyer-registration'),
+    path('login/', views.LawyerAuthenticationView.as_view(), name='lawyer-login'),
 ]
 
 urlpatterns += router.urls
