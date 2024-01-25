@@ -358,7 +358,7 @@ const mockupdata = {
       "cv" : null,
     }
   ],
-  disabledDays : [new Date(2024,1,1), new Date(2024,4,13)]
+  disabledDays : [new Date(2024,0,28), new Date(2024,4,13)]
 }
 export default function Page({ params }: { params: { id: string } }) {
   const lawyer = mockupdata.lawyers.find((lawyer) => String(lawyer.id) === params.id)
@@ -520,7 +520,6 @@ export default function Page({ params }: { params: { id: string } }) {
                 <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-75'>
                   <div className='bg-white text-black relative p-10 border-2 border-gray rounded-md w-[50%]'>
                     <button className='text-black absolute top-1 right-3' onClick={()=>setPopup(false)}>&times;</button>
-
                     <form onSubmit={handleSubmit}>
                       <h2 className='text-center pb-5 font-semibold text-lg'>Make an Appointment</h2>
                       <div>
@@ -552,7 +551,7 @@ export default function Page({ params }: { params: { id: string } }) {
                           onClickDay={handleDateChange}
                         />                      
                       </div>
-                      <button type="submit" onClick={()=> handleSubmit}>Submit</button>
+                      <button type="submit">Submit</button>
                     </form>
                   </div>
                 </div>
@@ -569,12 +568,9 @@ export default function Page({ params }: { params: { id: string } }) {
               } */}
               {ratingPopup ? (
                 <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-75'>
-                  <div className='bg-white text-black relative pl-16 py-6 border-2 border-gray rounded-md w-[25%]'>
+                  <div className='bg-white text-black relative flex items-center justify-center py-9 px-5 border-2 border-gray rounded-md w-fit'>
                   <button className='text-black absolute top-1 right-3 z-50' onClick={()=>setRatingPopup(false)}>x</button>
-                    <form className='flex gap-8'>
-                      <StarRate  onChange={handleRatingChange} />
-                      <button className='px-2 py-1 bg-red-700 text-white rounded-md text-sm'>send</button>
-                    </form>
+                    <StarRate  onChange={handleRatingChange} />
                 </div>
               </div>
               ) : 

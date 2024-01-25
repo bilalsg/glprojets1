@@ -6,23 +6,54 @@ import Request from '@/components/Request';
 import { LogOutIcon } from 'lucide-react';
 import { Moon, Sun } from 'lucide-react';
 
+interface Appointment {
+    id: number;
+    category: string;
+    description: string;
+    budget: number;
+    appointment: {
+        date: Date;
+        time: string;
+    };    
+    userfname: string;
+    userlname: string;
+    email: string;
+    phoneNumber: string;
+  }
+
 const LawyerDashboard = () => {
     const [page1, setPage1] = useState(true)
     const [page2, setPage2] = useState(false)
-    const [date, setDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState<Date | null>();
+    const [appointments, setAppointments] = useState<Appointment[]>([]);
+
+    const handleDateClick = async (date: Date) => {
+        setSelectedDate(date);
+        const filteredAppointments = requests.filter(
+            (appointment) => appointment.appointment.date.toDateString() === date.toDateString()
+          );
+          setAppointments(filteredAppointments);
+          console.log(requests)
+          console.log(filteredAppointments)
+    };
+
     const tileDisabled= ({ date, view }: { date: Date; view: string }) => {
         if (view === 'month' && (date.getDay() === 5 || date.getDay() === 6)) {
           return true;
         }
       return false;
     };
+    
     const requests = [
         {
             id: 1,
             category : "droit",
             description: "string",
             budget: 1000,
-            appointment: new Date(1, 3, 2024),
+            appointment: {
+                date: new Date(2024, 0, 25),
+                time: "11:30",
+            },
             userfname: "houssem",
             userlname: "mechraoui",
             email: "d.mechraoui8@gmail.com",
@@ -33,7 +64,10 @@ const LawyerDashboard = () => {
             category : "droit",
             description: "string",
             budget: 1000,
-            appointment: new Date(1, 3, 2024),
+            appointment: {
+                date: new Date(2024, 0, 25),
+                time: "14:30",
+            },
             userfname: "houssem",
             userlname: "mechraoui",
             email: "d.mechraoui8@gmail.com",
@@ -44,7 +78,10 @@ const LawyerDashboard = () => {
             category : "droit",
             description: "string",
             budget: 1000,
-            appointment: new Date(1, 3, 2024),
+            appointment: {
+                date: new Date(2024, 0, 25),
+                time: "15:30",
+            },
             userfname: "houssem",
             userlname: "mechraoui",
             email: "d.mechraoui8@gmail.com",
@@ -55,7 +92,10 @@ const LawyerDashboard = () => {
             category : "droit",
             description: "string",
             budget: 1000,
-            appointment: new Date(1, 3, 2024),
+            appointment: {
+                date: new Date(2024, 0, 25),
+                time: "8:30",
+            },
             userfname: "houssem",
             userlname: "mechraoui",
             email: "d.mechraoui8@gmail.com",
@@ -66,7 +106,10 @@ const LawyerDashboard = () => {
             category : "droit",
             description: "string",
             budget: 1000,
-            appointment: new Date(1, 3, 2024),
+            appointment: {
+                date: new Date(2024, 0, 25),
+                time: "9:00",
+            },
             userfname: "houssem",
             userlname: "mechraoui",
             email: "d.mechraoui8@gmail.com",
@@ -77,7 +120,10 @@ const LawyerDashboard = () => {
             category : "droit",
             description: "string",
             budget: 1000,
-            appointment: new Date(1, 3, 2024),
+            appointment: {
+                date: new Date(2024, 0, 25),
+                time: "14:30",
+            },
             userfname: "houssem",
             userlname: "mechraoui",
             email: "d.mechraoui8@gmail.com",
@@ -95,12 +141,28 @@ const LawyerDashboard = () => {
                 </ul>
             </div>
             {page1 ? (
-                <div className='text-black'>
-                    <Calendar
-                    calendarType='hebrew'
-                    tileDisabled={tileDisabled}
-                    onClickDay={setDate}
-                    />
+                <div className='text-black h-[100vh] w-[100vh] flex items-center justify-center'>
+                    <div>
+                        <Calendar
+                            calendarType='hebrew'
+                            tileDisabled={tileDisabled}
+                            onClickDay={handleDateClick}
+                        />
+                    </div>
+                    <div>
+                        {selectedDate && (
+                            <div className='bg-white rounded-md p-5 flex-col gap-2' >
+                                <h2>Appointments on {selectedDate.toLocaleDateString()}:</h2>
+                                <ul>
+                                    {appointments.map((appointment) => (
+                                    <li key={appointment.id}>
+                                        <button>{`${appointment.appointment.time}`} : {`${appointment.userfname} ${appointment.userlname}`}</button>
+                                    </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
                 </div>
             ) :
             page2 ? (

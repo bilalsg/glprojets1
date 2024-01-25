@@ -5,7 +5,10 @@ interface RequestProps {
     category : string;
     description: string;
     budget: number;
-    appointment: Date;
+    appointment: {
+      date: Date;
+      time: string;
+    };
     userfname: string;
     userlname: string;
     email: string;
@@ -30,7 +33,7 @@ const WorkRequestDetails: React.FC<RequestProps> = ({id, category, description, 
         </div>
         <div className="mb-3 flex gap-2">
           <h5 className="font-bold">Appointment Date:</h5>
-          <p>{appointment.getDate()} {appointment.getMonth() + 1} {appointment.getFullYear()} </p>
+          <p>{appointment.date.getDate()} {appointment.date.getMonth() + 1} {appointment.date.getFullYear()} </p>
         </div>
         <div className="mb-3 flex gap-2">
           <h5 className="font-bold">Name:</h5>

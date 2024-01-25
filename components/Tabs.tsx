@@ -13,6 +13,7 @@ const coordinates = {
   lat: 40.7128,
   lng: -74.0060,
 };
+
 type Review = {
   username: string;
   comment: string;
@@ -26,15 +27,46 @@ interface tabsCompProps {
   cv?: string | null;
   onClickDay: (date: Date) => void;
 }
+
 const disabledDays = [new Date(2024,1,1), new Date(2024,4,13)]
 const Tabscomp :React.FC<tabsCompProps>  = (props) => {
   const { adress,cv, description, experiences, Reviews} = props
   const [forceRender, setForceRender] = useState(false);
+  const [comment, setComment] = useState('')
   const [date, setDate] = useState(new Date());
   const handleTabSelect = () => {
     setForceRender(true);
   };
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>)=>{
+    setComment(event.target.value);
+  }
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log(comment);
+    setComment('')
+
+    // const apiUrl = '';
+
+    // try {
+    //   const response = await fetch(apiUrl, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(formData),
+    //   });
+
+    //   if (response.ok) {
+    //     console.log('Appointment submitted successfully!');
+    //   } else {
+    //     console.error('Error submitting appointment:', response.statusText);
+    //   }
+    // } catch (error) {
+    //   console.error('Network error:');
+    // }
+  };
 
   const tileDisabled = ({ date, view }: { date: Date; view: string }) => {
     const currentDate = new Date();
@@ -107,10 +139,10 @@ const Tabscomp :React.FC<tabsCompProps>  = (props) => {
 
           <TabPanel>
             <div className='p-10 bg-white'>
-                  <div>
-                    <input type="text" name="comment" id="comment" placeholder='comment here'/>
-                    <button>add</button>
-                  </div>
+                  <form onSubmit={handleSubmit}>
+                    <input type="text" name="comment" value={comment} onChange={handleChange} id="comment" placeholder='comment here'/>
+                    <button type='submit'>add</button>
+                  </form>
                 {Reviews.map((review, index)=>(
                   <Comment key={index} username={review.username} comment={review.comment}/>
                 ))}

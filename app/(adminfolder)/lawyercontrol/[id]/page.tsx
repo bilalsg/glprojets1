@@ -3,6 +3,7 @@ import StarRating from '@/components/StarRating';
 import Tabscomp from '@/components/Tabs';
 import { useState } from 'react';
 import { workerData } from 'worker_threads';
+import { Settings } from 'lucide-react';
 
 
 export default function Page({ params }: { params: { id: string } }) {
@@ -350,7 +351,6 @@ export default function Page({ params }: { params: { id: string } }) {
           "cv" : null,
         }
     ]
-    const [banned, setBanned] = useState(false)
     const [deleteText, setDeleteText] = useState(false)
     const [confirmation, setConfirmation] = useState(false)
     const lawyer = lawyers.find(lawyer => String(lawyer.id) === params.id)
@@ -361,10 +361,34 @@ export default function Page({ params }: { params: { id: string } }) {
         // router.push('/404');
         return null;
     }
-    function handleDelete(){
-      console.log("helllo")
+    const handleDelete = async (lawyerId: number ) => {
+      console.log("dina is here again ", lawyerId)
+      // const apiUrl = `/${lawyerId}`;
+  
+      // try {
+      //   const response = await fetch(apiUrl, {
+      //     method: 'DELETE',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //   });
+  
+      //   if (response.ok) {
+      //     console.log('Comment deleted successfully!');
+      //   } else {
+      //     console.error('Error deleting comment:', response.statusText);
+      //   }
+      // } catch (error) {
+      //   console.error('Network error:', error);
+      // }
+      setPopup(false);
+      window.location.href = '/lawyercontrol';
+    };
+    const handleCancel = ()=>{
+      setConfirmation(false)
+      setPopup(false)
+      setDeleteText(false)
     }
-
     const [popup, setPopup] = useState(false)
     return (
         <div>
@@ -375,8 +399,8 @@ export default function Page({ params }: { params: { id: string } }) {
             src={lawyer.imageURL || "/law7.jpg"}
             alt="Sample Image"
           ></img>
-          <div className="flex-col items-start justify-start p-4 leading-normal text-white">
-              <button className='self-end flex' onClick={()=>setPopup(true)}>setting</button>
+          <div className="flex-col items-start justify-start p-4 relative leading-normal text-white">
+              <button className='absolute right-10' onClick={()=>setPopup(true)}><Settings/> </button>
               <h5 className="mb-2 text-2xl font-bold">
                 {capitalizeFirstLetter(lawyer.firstName) + ' ' + capitalizeFirstLetter(lawyer.lastName)}
               </h5>
@@ -426,23 +450,30 @@ export default function Page({ params }: { params: { id: string } }) {
             </div>
             {popup ? (
               <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-75'>
-                <div className='bg-black flex-col items-center justify-center relative p-10 border-2 border-gray rounded-md w-[25%]'>
-                  <button className='text-white absolute top-1 right-3' onClick={()=>setPopup(false)}>&times;</button>
-                  <div>
-                    {banned ? (
-                      <button onClick={()=>setBanned(false)} className='text-white w-fit p-2'>Unban Account</button>
-                    ):
-                    (
-                      <button className='text-red-700 w-fit  p-2' onClick={()=>setBanned(true)}>Ban Account</button>
-                    )}
-                  </div>
-                  <div>
-                    <button onClick={()=>setDeleteText(true)} className='text-red-700 w-fit  p-2'>Delete Account</button>
+                <div className='bg-black flex-col items-center justify-center relative p-10 border-2 border-gray rounded-md w-fit'>
+                  <button className='text-white absolute top-1 right-3' onClick={handleCancel}>&times;</button>
+                  <div className='flex items-center justify-center'>
+                    <button onClick={()=>setDeleteText(true)} className={`text-red-700 w-fit p-2 ${deleteText ? 'hidden' : ''}`}>Delete Account</button>
                     {deleteText? (
                       <div className='grid grid-cols-2 gap-3'>
-                        <p className='text-gray-400 col-span-2 text-sm'>are you sure you want to delete {lawyer.firstName + ' ' + lawyer.lastName}'s account? please note that you can't undo this action</p>
-                        <button className='text-red-700 border-2 p-1 rounded-md' onClick={() => setConfirmation(true)}>continue</button>
-                        <button className='text-white border-2 p-1 rounded-md' onClick={() => setDeleteText(false)}>cancel</button>
+                        <p className='text-gray-400 col-span-2 text-sm'>are you sure you want to delete {lawyer.firstName + ' ' + lawyer.lastName}'s account?</p>
+                        <button className='text-red-700 border-2 p-1 rounded-md' onClick={()=>handleDelete(lawyer.id)}>continue</button>
+                        <button className='text-white border-2 p-1 rounded-md' onClick={handleCancel}>cancel</button>
+                        {/* {confirmation? (
+                          <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-75'>
+                          <div className='bg-black text-white flex-col items-center justify-center relative p-10 border-2 border-gray rounded-md w-fit'>
+                            <h5>Confirm delete</h5>
+                            <form onSubmit={(event)=>handleDelete(lawyer.id, event)}>
+                              <label htmlFor='email'>Email</label>
+                              <input id='email' type='email' placeholder='email'/>
+                              <label htmlFor='pwd'></label>
+                              <input id='pwd' type='password' />
+                              <button type='submit'>confirm</button>
+                              <button onClick={handleCancel}>cancel</button>
+                            </form>
+                          </div>
+                        </div>
+                        ): null} */}
                       </div>
                     )
                     : null}
@@ -450,23 +481,6 @@ export default function Page({ params }: { params: { id: string } }) {
                 </div>
               </div>
             ): null}
-            { confirmation ? 
-            (
-              <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-75'>
-                <div className='bg-black text-white flex-col items-center justify-center relative p-10 border-2 border-gray rounded-md w-[25%]'>
-                  <h5>Confirm delete</h5>
-                  <form>
-                    <label htmlFor='email'>Email</label>
-                    <input id='email' type='email' placeholder='email'/>
-                    <label htmlFor='pwd'></label>
-                    <input id='pwd' type='password' />
-                    <button onClick={handleDelete}>confirm</button>
-                    <button onClick={()=>setConfirmation(false)}>cancel</button>
-                  </form>
-                </div>
-              </div>
-            ): null
-            }
       </div>
       <Tabscomp key={lawyer.id} onClickDay={(date) => {
     console.log(date);

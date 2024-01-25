@@ -48,7 +48,7 @@ export default function RootLayout({
       <body className={`${inter.className}  bg-black`}>
        <Authprovider>
           <I18nextProvider i18n={i18next}>
-            <Navbar className='z-20 ' /> 
+            {/* <Navbar className='z-20 ' />  */}
               {children}
           </I18nextProvider>
        </Authprovider>
