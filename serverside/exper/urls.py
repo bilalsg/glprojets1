@@ -32,6 +32,8 @@ urlpatterns = [
     path('login/', views.LawyerAuthenticationView.as_view(), name='lawyer-login'),
      path('register/google/', views.GoogleUserRegistrationView.as_view(), name='google_user_register'),
     path('login/google/', views.GoogleUserLoginView.as_view(), name='google_user_login'),
+    path('usereview', views.ReviewCreateView.as_view(), name='usereview'),
+
 ]
 
 urlpatterns += router.urls

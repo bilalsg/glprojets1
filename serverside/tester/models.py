@@ -21,7 +21,14 @@ class Lawyer(AbstractUser):
         return self.username
     
 
+
+class GoogleUser(AbstractUser):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    email = models.EmailField()
+    def __str__(self):
+        return self.username
 class Review(models.Model):
+    userr = models.ForeignKey(GoogleUser, on_delete=models.CASCADE, related_name='rev')
     lawyer = models.ForeignKey(Lawyer, on_delete=models.CASCADE, related_name='reviews')
     rating = models.IntegerField()
     comment = models.TextField()
@@ -47,12 +54,6 @@ class Calender(models.Model):
     waiting = models.BooleanField(default=False)
     empty = models.BooleanField(default=True)
     inavailable = models.BooleanField(default=False)
-
-class GoogleUser(AbstractUser):
-    test = models.CharField(max_length=255, blank=True, null=True)
-    email = models.EmailField()
-    def __str__(self):
-        return self.username
 
 Lawyer._meta.get_field('groups').remote_field.related_name = 'customuser_groups'
 Lawyer._meta.get_field('user_permissions').remote_field.related_name = 'customuser_user_permissions'

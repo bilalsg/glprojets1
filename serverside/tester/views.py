@@ -8,7 +8,7 @@ from django.shortcuts import render
 # Create your views here.
 
 def test(request):
-
+    GoogleUser.objects.all().delete()
     # print("hellos")
     # from .models import Lawyer
     # import string
@@ -179,14 +179,20 @@ class GoogleUserRegistrationView(generics.GenericAPIView):
 
         # Extract user information from the validated data
         email = serializer.validated_data.get('email')
-        username = serializer.validated_data.get('username')
-
+        name = serializer.validated_data.get('name')
+        print(name)
+        print(email)
+        from faker import Faker
+        fake = Faker()
+        username = fake.user_name()
+        print(username)
         # Check if a user with the given email already exists
         google_user, created = GoogleUser.objects.get_or_create(
             email=email,
             defaults={
-                'username': username,
-                'test': 'test_value',  # Add other fields as needed
+                'name': name,
+                'username':username
+                
             }
         )
 
@@ -214,13 +220,58 @@ class GoogleUserLoginView(generics.GenericAPIView):
 
         # Extract user information from the validated data
         email = serializer.validated_data.get('email')
-        username = serializer.validated_data.get('username')
+        username = serializer.validated_data.get('name')
+
 
         # Check if a user with the given email already exists
-        google_user = GoogleUser.objects.get(email=email, username=username)
+        google_user = GoogleUser.objects.get(email=email, name=username)
         google_user_id = google_user.id
 
         # Generate or get an existing token for the user
         
 
-        return Response({'token': google_user_id, 'message': 'Login successful'}, status=status.HTTP_200_OK)
+        return Response({'token': google_user_id}, status=status.HTTP_200_OK)
+
+
+from .permissions import IsVerifiedUser
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from .models import Review
+from .serializers import ReviewSerializer
+from .models import GoogleUser, Lawyer
+
+class ReviewCreateView(generics.GenericAPIView):
+    serializer_class = ReviewSerializer  # Add this line
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        # Extract data from the request
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # Assuming the user ID is provided in the 'X-User-ID' header
+            user_id = request.headers.get('X-User-ID')
+
+            try:
+                # Retrieve the user instance based on the user ID
+                user = GoogleUser.objects.get(id=user_id)
+
+                # Extract data for creating the Review instance
+                serializer.validated_data['userr'] = user
+
+                # Assuming the lawyer ID is provided in the request data
+                lawyer_id = serializer.validated_data.get('lawyer_id')
+                lawyer = Lawyer.objects.get(id=lawyer_id)
+                serializer.validated_data['lawyer'] = lawyer
+
+                # Create the Review instance
+                review = Review.objects.create(**serializer.validated_data)
+
+                return Response("Review created successfully", status=status.HTTP_201_CREATED)
+
+            except GoogleUser.DoesNotExist:
+                return Response("Invalid user ID", status=status.HTTP_400_BAD_REQUEST)
+            except Lawyer.DoesNotExist:
+                return Response("Invalid lawyer ID", status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
