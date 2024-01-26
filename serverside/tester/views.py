@@ -155,17 +155,46 @@ class LawyerAuthenticationView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        usernamee=serializer.validated_data['username']
-        passwordd=serializer.validated_data['password']
-        print(usernamee)
-        print(passwordd)
-        user = authenticate(
-            username=serializer.validated_data['username'],
-            password=serializer.validated_data['password']
-        )
+
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+
+        user = authenticate(username=username, password=password)
+
         if user:
             token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
+
+            # Fetch additional information about the lawyer
+            try:
+                lawyer = Lawyer.objects.get(username=username)
+                lawyer_data = {
+                    'id': lawyer.id,
+                    'name': lawyer.name,
+                    'email': lawyer.email,    
+                        'phone' : lawyer.phone,
+                        'adress' : lawyer.adress,
+                        
+                        'website' :lawyer.website,
+                        'facebook' :lawyer.facebook,
+                        'twitter' :lawyer.twitter,
+                        'linkedin' :lawyer.linkedin,
+                        'category':lawyer.category,
+                        'description':lawyer.description,
+                        'cv':lawyer.cv,
+                        'date_of_birth':lawyer.date_of_birth,
+                        'profile_picture':lawyer.profile_picture
+                    # Include other fields as needed
+                }
+            except Lawyer.DoesNotExist:
+                lawyer_data = None
+
+            # Include lawyer information in the response
+            response_data = {
+                'token': token.key,
+                'lawyer': lawyer_data,
+            }
+
+            return Response(response_data)
         else:
             return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
