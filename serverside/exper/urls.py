@@ -21,7 +21,7 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 
 router.register(r'Lawyer', views.LawyerViewSet)
-router.register(r'Review', views.ReviewViewSet)
+# router.register(r'Review', views.ReviewViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,6 +33,8 @@ urlpatterns = [
      path('register/google/', views.GoogleUserRegistrationView.as_view(), name='google_user_register'),
     path('login/google/', views.GoogleUserLoginView.as_view(), name='google_user_login'),
     path('usereview', views.ReviewCreateView.as_view(), name='usereview'),
+    path('<int:lawyer_id>/reviews/', views.LawyerReviewsView2.as_view(), name='reviewr'),
+    path('api/lawyers/<int:lawyer_id>/', views.DeleteLawyerView.as_view(), name='delete_lawyer'),
 
 ]
 

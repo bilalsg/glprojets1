@@ -23,8 +23,16 @@ class LawyerSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = ['lawyer', 'rating', 'comment','userr']
+        fields = ['lawyerr', 'rating', 'comment','userr']
 
+class ReviewSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['lawyerr', 'rating', 'comment']
+class ReviewSerializer3(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = [ 'rating', 'comment']
 from django.contrib.auth import get_user_model
 
 class LawyerRegistrationSerializer(serializers.ModelSerializer):
@@ -50,3 +58,4 @@ class GoogleUserLoginSerializer(serializers.Serializer):
     def validate(self, data):
         # You can perform additional validation logic if required
         return data
+    

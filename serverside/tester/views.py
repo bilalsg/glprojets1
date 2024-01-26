@@ -8,7 +8,7 @@ from django.shortcuts import render
 # Create your views here.
 
 def test(request):
-    GoogleUser.objects.all().delete()
+
     # print("hellos")
     # from .models import Lawyer
     # import string
@@ -127,9 +127,9 @@ class LawyerViewSet(viewsets.ModelViewSet):
     serializer_class = LawyerSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
+# class ReviewViewSet(viewsets.ModelViewSet):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewSerializer
 
 from django.contrib.auth.hashers import make_password
 class LawyerRegistrationView(generics.CreateAPIView):
@@ -241,7 +241,7 @@ from .serializers import ReviewSerializer
 from .models import GoogleUser, Lawyer
 
 class ReviewCreateView(generics.GenericAPIView):
-    serializer_class = ReviewSerializer  # Add this line
+    serializer_class = ReviewSerializer3
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -249,23 +249,35 @@ class ReviewCreateView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
-            # Assuming the user ID is provided in the 'X-User-ID' header
-            user_id = request.headers.get('X-User-ID')
+            # Get user_id from the 'X-User-ID' header
+            user_id = request.headers.get('X-User-ID', None)
+            lawyer_id = request.headers.get('lawyer_id', None)
+            # user_id=6
+            # lawyer_id=578
+
+            # Check if user_id is provided
+            if not user_id:
+                return Response("User ID not provided in the header", status=status.HTTP_400_BAD_REQUEST)
 
             try:
                 # Retrieve the user instance based on the user ID
                 user = GoogleUser.objects.get(id=user_id)
 
                 # Extract data for creating the Review instance
-                serializer.validated_data['userr'] = user
+                
+                rating = serializer.validated_data.get('rating')
+                comment = serializer.validated_data.get('comment')
 
-                # Assuming the lawyer ID is provided in the request data
-                lawyer_id = serializer.validated_data.get('lawyer_id')
+                # Retrieve the lawyer instance based on the lawyer ID
                 lawyer = Lawyer.objects.get(id=lawyer_id)
-                serializer.validated_data['lawyer'] = lawyer
 
                 # Create the Review instance
-                review = Review.objects.create(**serializer.validated_data)
+                review = Review.objects.create(
+                    userr=user,
+                    lawyerr=lawyer,
+                    rating=rating,
+                    comment=comment
+                )
 
                 return Response("Review created successfully", status=status.HTTP_201_CREATED)
 
@@ -275,3 +287,50 @@ class ReviewCreateView(generics.GenericAPIView):
                 return Response("Invalid lawyer ID", status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class LawyerReviewsView(generics.ListAPIView):
+#     serializer_class = ReviewSerializer
+#     permission_classes = [permissions.AllowAny]
+
+#     def get_queryset(self, *args, **kwargs):
+#         # Get the lawyer_id from the request query parameters
+#         lawyer_id = self.request.query_params.get('lawyer_id')
+#         laywer_id=528
+#         # Check if lawyer_id is provided
+#         if lawyer_id is not None:
+#             # Filter reviews based on the provided lawyer_id
+#             lawyerrr = Lawyer.objects.filter(id=lawyer_id)
+#             queryset = Review.objects.filter(lawyerr=lawyerrr)
+#             return queryset
+
+#         # If lawyer_id is not provided, return an empty queryset or all reviews
+#         return Review.objects.none() 
+    
+class LawyerReviewsView2(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        # Get the lawyer_id from the URL parameters
+        lawyer_id = self.kwargs['lawyer_id']
+
+        # Filter reviews based on the provided lawyer_id
+        queryset = Review.objects.filter(lawyerr_id=lawyer_id)
+
+        return queryset
+
+
+
+
+
+
+class DeleteLawyerView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]  # Ensure the user is authenticated
+
+    def delete(self, request, lawyer_id):
+        try:
+            lawyer = Lawyer.objects.get(id=lawyer_id)
+        except Lawyer.DoesNotExist:
+            return Response({'error': 'Lawyer not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        lawyer.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -15,10 +15,10 @@ class Lawyer(AbstractUser):
     description = models.TextField(blank=True)
     cv = models.TextField(blank=True,default = "lawyer")
     date_of_birth = models.DateField(null=True, blank=True)
-    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    profile_picture = models.URLField(max_length=200, null=True, blank=True)
 
     def __str__(self):
-        return self.username
+        return str(self.id)
     
 
 
@@ -26,13 +26,7 @@ class GoogleUser(AbstractUser):
     name = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField()
     def __str__(self):
-        return self.username
-class Review(models.Model):
-    userr = models.ForeignKey(GoogleUser, on_delete=models.CASCADE, related_name='rev')
-    lawyer = models.ForeignKey(Lawyer, on_delete=models.CASCADE, related_name='reviews')
-    rating = models.IntegerField()
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+        return str(self.id)
 
 class Calender(models.Model):
     date_created = models.DateField(auto_now_add=True)
@@ -54,6 +48,13 @@ class Calender(models.Model):
     waiting = models.BooleanField(default=False)
     empty = models.BooleanField(default=True)
     inavailable = models.BooleanField(default=False)
+
+class Review(models.Model):
+    lawyerr = models.ForeignKey(Lawyer, on_delete=models.CASCADE, related_name='reviews',blank=True, null=True)
+    userr = models.ForeignKey(GoogleUser, on_delete=models.CASCADE, related_name='rev')
+    rating = models.IntegerField()
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
 Lawyer._meta.get_field('groups').remote_field.related_name = 'customuser_groups'
 Lawyer._meta.get_field('user_permissions').remote_field.related_name = 'customuser_user_permissions'
