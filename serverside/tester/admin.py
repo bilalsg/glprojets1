@@ -6,3 +6,4 @@ from .models import *
 admin.site.register(Lawyer)
 admin.site.register(GoogleUser)
 admin.site.register(Review)
+admin.site.register(Calender)

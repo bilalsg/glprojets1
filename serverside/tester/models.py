@@ -28,8 +28,11 @@ class GoogleUser(AbstractUser):
     def __str__(self):
         return str(self.id)
 
+
 class Calender(models.Model):
-    date_created = models.DateField(auto_now_add=True)
+    law = models.ForeignKey(Lawyer, on_delete=models.CASCADE, related_name='cal')
+    google_user = models.ForeignKey(GoogleUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='calendars')
+    date_created = models.DateField()
     worktimes = [
         ('7:00  - 8:00 ', '7:00  - 8:00'),
         ('8:00  - 9:00 ', '8:00  - 9:00'),
@@ -48,6 +51,9 @@ class Calender(models.Model):
     waiting = models.BooleanField(default=False)
     empty = models.BooleanField(default=True)
     inavailable = models.BooleanField(default=False)
+    def __str__(self):
+        return str(self.time)
+    
 
 class Review(models.Model):
     lawyerr = models.ForeignKey(Lawyer, on_delete=models.CASCADE, related_name='reviews',blank=True, null=True)

@@ -148,3 +148,19 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Add the origin of your Next.js app
     # Add more origins as needed
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'X-User-ID',
+    'LawyerID',  # Add your custom header here
+]

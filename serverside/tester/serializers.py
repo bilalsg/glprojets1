@@ -59,3 +59,18 @@ class GoogleUserLoginSerializer(serializers.Serializer):
         # You can perform additional validation logic if required
         return data
     
+class CalenderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Calender
+        fields = [ 'time', 'occupied','waiting','empty','inavailable','law','date_created','google_user']
+
+
+class CalenderSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = Calender
+        fields = ['id', 'empty', 'waiting','date_created','time','law','google_user']
+
+class CalenderSerializer3(serializers.ModelSerializer):
+    class Meta:
+        model = Calender
+        fields = ['id', 'empty', 'waiting','date_created','time','law','google_user','inavailable','occupied']

@@ -34,7 +34,11 @@ urlpatterns = [
     path('login/google/', views.GoogleUserLoginView.as_view(), name='google_user_login'),
     path('usereview', views.ReviewCreateView.as_view(), name='usereview'),
     path('<int:lawyer_id>/reviews/', views.LawyerReviewsView2.as_view(), name='reviewr'),
-    path('api/lawyers/<int:lawyer_id>/', views.DeleteLawyerView.as_view(), name='delete_lawyer'),
+    path('delete/<int:lawyer_id>/', views.DeleteLawyerView.as_view(), name='delete_lawyer'),
+    path('cal/<int:lawyer_id>/', views.LawyerAppointmentsAPIView.as_view(), name='lawyer-appointments-api'),
+    path('calender/update', views.CalenderUserView.as_view(), name='calender-update'),
+    path('calender/update2', views.CalenderLawyerView.as_view(), name='calender-update2'),
+    path('logout/', views.LawyerLogoutView.as_view(), name='lawyer-logout'),
 
 ]
 

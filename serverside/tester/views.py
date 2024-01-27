@@ -1,3 +1,5 @@
+from .serializers import *
+from .models import *
 import os
 import django
 filepath = 'C:\\Users\\LENOVO\\Desktop\\gl\\serverside\\exper\\settings.py'
@@ -9,6 +11,43 @@ from django.shortcuts import render
 
 def test(request):
 
+    # Calender.objects.all().delete()
+    # from datetime import datetime, timedelta
+    # from django.utils import timezone
+
+    # # Function to generate instances for the next 30 days
+    # def generate_calendar_instances():
+    #     worktimes = [
+    #         ('7:00  - 8:00 ', '7:00  - 8:00'),
+    #         ('8:00  - 9:00 ', '8:00  - 9:00'),
+    #         ('9:00  - 10:00 ', '9:00  - 10:00'),
+    #         ('10:00 - 11:00 ', '10:00 - 11:00'),
+    #         ('11:00 - 12:00 ', '11:00 - 12:00'),
+    #         ('12:00 - 13:00 ', '12:00 - 13:00'),
+    #         ('13:00 - 14:00 ', '13:00 - 14:00'),
+    #         ('14:00 - 15:00 ', '14:00 - 15:00'),
+    #         ('15:00 - 16:00 ', '15:00 - 16:00'),
+    #         ('16:00 - 17:00 ', '16:00 - 17:00'),
+    #         ('17:00 - 18:00 ', '17:00 - 18:00'),
+    #     ]
+
+    #     # Get the current date
+    #     today = timezone.now().date()
+
+    #     # Generate instances for the next 30 days
+    #     for day_offset in range(30):
+    #         date_to_create = today + timedelta(days=day_offset)
+
+    #         # Create instances for each worktime
+    #         for time_start, time_end in worktimes:
+    #             # Construct the time string and create Calendar instance
+    #             time_range = time_start
+    #             lawyerid = 528
+    #             lawyere = Lawyer.objects.get(id=lawyerid)
+    #             Calender.objects.create(date_created=date_to_create, time=time_range,law=lawyere)
+
+    # #Call the function to generate instances
+    # generate_calendar_instances()
     # print("hellos")
     # from .models import Lawyer
     # import string
@@ -103,8 +142,6 @@ from rest_framework import permissions, viewsets,status,generics,views
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model ,authenticate
-from .serializers import *
-from .models import *
 
 # class UserViewSet(viewsets.ModelViewSet):
 #     """
@@ -136,14 +173,18 @@ class LawyerRegistrationView(generics.CreateAPIView):
     serializer_class = LawyerRegistrationSerializer
 
     def post(self, request, *args, **kwargs):
+        # Assuming raw_password is obtained from request.data
         raw_password = request.data.get('password')
 
         # Hash the password using make_password
         hashed_password = make_password(raw_password)
 
-        # Replace the 'password' field in request.data with the hashed password
-        request.data['password'] = hashed_password
-        serializer = self.get_serializer(data=request.data)
+        # Create a mutable copy of request.data
+        mutable_data = request.data.copy()
+
+        # Replace the 'password' field in the mutable copy with the hashed password
+        mutable_data['password'] = hashed_password
+        serializer = self.get_serializer(data=mutable_data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         print(user)
@@ -280,7 +321,7 @@ class ReviewCreateView(generics.GenericAPIView):
         if serializer.is_valid():
             # Get user_id from the 'X-User-ID' header
             user_id = request.headers.get('X-User-ID', None)
-            lawyer_id = request.headers.get('lawyer_id', None)
+            lawyer_id = request.headers.get('LawyerID', None)
             # user_id=6
             # lawyer_id=578
 
@@ -353,7 +394,7 @@ class LawyerReviewsView2(generics.ListAPIView):
 
 
 class DeleteLawyerView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]  # Ensure the user is authenticated
+    permission_classes = [permissions.IsAdminUser]  # Ensure the user is authenticated
 
     def delete(self, request, lawyer_id):
         try:
@@ -363,3 +404,107 @@ class DeleteLawyerView(generics.GenericAPIView):
 
         lawyer.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class LawyerAppointmentsAPIView(generics.ListAPIView):
+    serializer_class = CalenderSerializer
+
+    def get_queryset(self):
+        print("test")
+        # Get the lawyer_id from the URL parameters
+        lawyer_id = self.kwargs['lawyer_id']
+        print(lawyer_id)
+        # Filter reviews based on the provided lawyer_id
+        queryset = Calender.objects.filter(law=lawyer_id)
+
+        return queryset
+import json
+class CalenderUserView(generics.UpdateAPIView):
+    queryset = Calender.objects.all()
+    serializer_class = CalenderSerializer2
+
+    def update(self, request, *args, **kwargs):
+        # Assuming 'google_user', 'law', 'time', and 'date_created' are present in the request data
+        google_user_id = request.data.get('google_user', None)
+        lawyer_id = request.data.get('law', None)
+        time = request.data.get('time', None)
+        date_created = request.data.get('date_created', None)
+        empt = request.data.get('empty', None)
+        waiti = request.data.get('waiting', None)
+        # Additional validation or checks based on your requirements
+        print(request.data)
+        # Extract the instance based on google_user, law, time, and date_created
+        try:
+            instance = Calender.objects.get(
+                
+                law_id=lawyer_id,
+                time=time,
+                date_created=date_created
+            )
+        except Calender.DoesNotExist:
+            return Response({'detail': 'Calender not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Update the fields
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        instance.empty = empt
+        instance.waiting = waiti
+        instance.google_user = serializer.validated_data['google_user']
+        instance.save()
+
+        return Response(serializer.data)
+
+class CalenderLawyerView(generics.UpdateAPIView):
+    queryset = Calender.objects.all()
+    serializer_class = CalenderSerializer3
+
+    def update(self, request, *args, **kwargs):
+        # Assuming 'google_user', 'law', 'time', and 'date_created' are present in the request data
+        google_user_idd = request.data.get('google_user', None)
+        lawyer_id = request.data.get('law', None)
+        time = request.data.get('time', None)
+        date_created = request.data.get('date_created', None)
+        occu = request.data.get('occupied', None)
+        waiti = request.data.get('waiting', None)
+        inav = request.data.get('inavailable', None)
+        # Additional validation or checks based on your requirements
+        print(request.data)
+        # Extract the instance based on google_user, law, time, and date_created
+        try:
+            instance = Calender.objects.get(
+                google_user_id=google_user_idd,
+                law_id=lawyer_id,
+                time=time,
+                date_created=date_created
+            )
+        except Calender.DoesNotExist:
+            return Response({'detail': 'Calender not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Update the fields
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        instance.occupied = occu
+        instance.waiting = waiti
+        instance.inavailable = inav
+        
+        instance.save()
+
+        return Response(serializer.data)
+    
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+class LawyerLogoutView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        # Delete the user's token to perform a logout
+        request.auth.delete()
+
+        # You can perform any additional cleanup or logout logic here
+
+        return Response({'detail': 'Successfully logged out'}, status=status.HTTP_200_OK)
