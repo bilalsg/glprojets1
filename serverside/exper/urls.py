@@ -39,6 +39,7 @@ urlpatterns = [
     path('calender/update', views.CalenderUserView.as_view(), name='calender-update'),
     path('calender/update2', views.CalenderLawyerView.as_view(), name='calender-update2'),
     path('logout/', views.LawyerLogoutView.as_view(), name='lawyer-logout'),
+    path('requests/', views.LawyerRequestCalenderView.as_view(), name='lawyedr-logout'),
 
 ]
 

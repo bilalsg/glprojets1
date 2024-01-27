@@ -47,10 +47,8 @@ class Calender(models.Model):
         ('17:00 - 18:00 ', '17:00 - 18:00'),
     ]
     time = models.CharField(max_length=50, choices=worktimes)
-    occupied = models.BooleanField(default=False)
-    waiting = models.BooleanField(default=False)
-    empty = models.BooleanField(default=True)
-    inavailable = models.BooleanField(default=False)
+    empty_waiting = models.BooleanField(default=True)
+    occupied_inavailable = models.BooleanField(default=False)
     def __str__(self):
         return str(self.time)
     

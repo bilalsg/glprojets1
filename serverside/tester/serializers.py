@@ -68,9 +68,9 @@ class CalenderSerializer(serializers.ModelSerializer):
 class CalenderSerializer2(serializers.ModelSerializer):
     class Meta:
         model = Calender
-        fields = ['id', 'empty', 'waiting','date_created','time','law','google_user']
+        fields = ['id', 'empty_waiting','date_created','time','law','google_user','occupied_inavailable']
 
 class CalenderSerializer3(serializers.ModelSerializer):
     class Meta:
         model = Calender
-        fields = ['id', 'empty', 'waiting','date_created','time','law','google_user','inavailable','occupied']
+        fields = ['id', 'empty_waiting','date_created','time','law','google_user','occupied_inavailable']

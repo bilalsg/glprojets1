@@ -214,7 +214,7 @@ class LawyerAuthenticationView(generics.GenericAPIView):
                     'email': lawyer.email,    
                         'phone' : lawyer.phone,
                         'adress' : lawyer.adress,
-                        
+                        'is_staff': lawyer.is_staff,
                         'website' :lawyer.website,
                         'facebook' :lawyer.facebook,
                         'twitter' :lawyer.twitter,
@@ -312,7 +312,7 @@ from .models import GoogleUser, Lawyer
 
 class ReviewCreateView(generics.GenericAPIView):
     serializer_class = ReviewSerializer3
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsVerifiedUser]
 
     def post(self, request, *args, **kwargs):
         # Extract data from the request
@@ -422,6 +422,7 @@ import json
 class CalenderUserView(generics.UpdateAPIView):
     queryset = Calender.objects.all()
     serializer_class = CalenderSerializer2
+    permission_classes = [IsVerifiedUser]
 
     def update(self, request, *args, **kwargs):
         # Assuming 'google_user', 'law', 'time', and 'date_created' are present in the request data
@@ -429,8 +430,8 @@ class CalenderUserView(generics.UpdateAPIView):
         lawyer_id = request.data.get('law', None)
         time = request.data.get('time', None)
         date_created = request.data.get('date_created', None)
-        empt = request.data.get('empty', None)
-        waiti = request.data.get('waiting', None)
+        emptw = request.data.get('empty_waiting', None)
+        occin = request.data.get('occupied_inavailable', None)
         # Additional validation or checks based on your requirements
         print(request.data)
         # Extract the instance based on google_user, law, time, and date_created
@@ -447,8 +448,8 @@ class CalenderUserView(generics.UpdateAPIView):
         # Update the fields
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        instance.empty = empt
-        instance.waiting = waiti
+        instance.empty_waiting = emptw
+        instance.occupied_inavailable = occin
         instance.google_user = serializer.validated_data['google_user']
         instance.save()
 
@@ -457,6 +458,7 @@ class CalenderUserView(generics.UpdateAPIView):
 class CalenderLawyerView(generics.UpdateAPIView):
     queryset = Calender.objects.all()
     serializer_class = CalenderSerializer3
+    permission_classes = [permissions.IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
         # Assuming 'google_user', 'law', 'time', and 'date_created' are present in the request data
@@ -464,9 +466,8 @@ class CalenderLawyerView(generics.UpdateAPIView):
         lawyer_id = request.data.get('law', None)
         time = request.data.get('time', None)
         date_created = request.data.get('date_created', None)
-        occu = request.data.get('occupied', None)
-        waiti = request.data.get('waiting', None)
-        inav = request.data.get('inavailable', None)
+        emptw = request.data.get('empty_waiting', None)
+        occin = request.data.get('occupied_inavailable', None)
         # Additional validation or checks based on your requirements
         print(request.data)
         # Extract the instance based on google_user, law, time, and date_created
@@ -483,9 +484,9 @@ class CalenderLawyerView(generics.UpdateAPIView):
         # Update the fields
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        instance.occupied = occu
-        instance.waiting = waiti
-        instance.inavailable = inav
+        instance.occupied_inavailable = occin
+        instance.empty_waiting = emptw
+        
         
         instance.save()
 
@@ -508,3 +509,40 @@ class LawyerLogoutView(APIView):
         # You can perform any additional cleanup or logout logic here
 
         return Response({'detail': 'Successfully logged out'}, status=status.HTTP_200_OK)
+
+
+# class DeleteLawyerView2(generics.DestroyAPIView):
+#     queryset = Lawyer.objects.all()
+#     permission_classes = [permissions.IsAdminUser]  # Ensure the user is an admin
+
+#     def delete(self, request, *args, **kwargs):
+#         lawyer_id = request.headers.get('LawyerID', None)  # Retrieve the lawyer ID from the request headers
+
+#         if not lawyer_id:
+#             return Response({'error': 'LawyerID not provided in the headers'}, status=status.HTTP_400_BAD_REQUEST)
+
+#         try:
+#             lawyer = Lawyer.objects.get(id=lawyer_id)
+#         except Lawyer.DoesNotExist:
+#             return Response({'error': 'Lawyer not found'}, status=status.HTTP_404_NOT_FOUND)
+
+#         lawyer.delete()
+#         return Response({'detail': 'Lawyer deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class LawyerRequestCalenderView(generics.ListAPIView):
+    serializer_class = CalenderSerializer2
+    authentication_classes = [TokenAuthentication]  # Add Token Authentication
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self, *args, **kwargs):
+        # Get the authenticated lawyer from the request
+        lawyer = self.request.user
+
+        # Filter instances based on the authenticated lawyer and conditions
+        queryset = Calender.objects.filter(
+            law=lawyer.id,
+            empty_waiting=False,
+            occupied_inavailable=False
+        )
+        return queryset
