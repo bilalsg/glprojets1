@@ -13,7 +13,6 @@ interface GooglemapProps {
 // Define the Googlemap component
 const Googlemap: NextPage<GooglemapProps> = ({ coordinates }) => (
   <div>
-    <h1>Your Page</h1>
     <MapComponent coordinates={coordinates} />
   </div>
 );

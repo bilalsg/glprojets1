@@ -8,23 +8,23 @@ interface TestimonialsProps {}
 const feedback = [
   {
     content:
-    "Money is only a tool. It will take you wherever you wish, but it will not replace you as the driver.",
+    "L'argent n'est qu'un outil. Il vous emmènera partout où vous le souhaitez, mais il ne vous remplacera pas en tant que conducteur.",
     name: "Herman Jensen",
-    title: "Founder & Leader",
+    title: "Fondateur et Leader",
     img: "/avatars/avatar1.jpg",
   },
   {
     content:
-      "Money makes your life easier. If you're lucky to have it, you're lucky.",
+      "L'argent rend votre vie plus facile. Si vous avez la chance de l'avoir, vous êtes chanceux.",
     name: "Steve Mark",
-    title: "Founder & Leader",
+    title: "Fondateur et Leader",
     img: "avatars/avatar2.jpg",
   },
   {
     content:
-      "It is usually people in the money business, finance, and international trade that are really rich.",
+      "Ce sont généralement les personnes dans les affaires, la finance et le commerce international qui sont vraiment riches.",
     name: "Kenn Gallagher",
-    title: "Founder & Leader",
+    title: "Fondateur et Leader",
     img: "avatars/avatar3.jpg",
   },
 ];
@@ -53,12 +53,11 @@ const Testimonials: React.FC<TestimonialsProps> = () => (
 
     <div className="w-full flex  justify-between items-center flex-col sm:mb-16 mb-6 relative z-[1]">
       <h2 className={styles.heading2}>
-        Some Tastomanials <br className="sm:block hidden" /> about us
+        Quelques Témoignages <br className="sm:block hidden" /> à notre sujet
       </h2>
       <div className="w-full md:mt-0 mt-6">
         <p className={`${styles.paragraph} text-left max-w-[450px] text-white`}>
-          Everything you need to accept card payments and grow your business
-          anywhere on the planet.
+          Tout ce dont vous avez besoin pour accepter les paiements par carte et développer votre entreprise n'importe où sur la planète.
         </p>
       </div>
     </div>

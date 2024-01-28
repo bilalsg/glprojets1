@@ -1,17 +1,25 @@
 "use client"
+import { signOut, useSession } from 'next-auth/react';
 import Button from '@/components/Button';
+import Button2 from '@/components/Button2';
 import { SelectDemo } from '@/components/Select';
 import React, { ReactNode, useState } from 'react';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
+import { useAuth } from '@/providers/AuthContext';
+import DropdownButton from '@/components/ui/dropdown';
 interface NavbarProps {
     className?: string; // Optional className prop of type string
   }
 const Navbar = ({className}:NavbarProps) => {
     const [nav, setNav] = useState(false);
+    const { data: session,status } = useSession();
+    const {setAuthUser,currentUser,lawyerCookie}=useAuth()
 
     const handleNav = () => {
       setNav(!nav);
     };
+   
+    console.log(session)
   return (
     <div className={`${className} flex z-50  justify-between items-center h-24 w-full  fixed backdrop-blur-md  bg-black/30  shadow-xl border-b-[2px] border-white/10	  sm:px-[100px] px-2 text-white`}>
         <div className=' flex gap-1'>
@@ -23,14 +31,19 @@ const Navbar = ({className}:NavbarProps) => {
         <div className='flex gap-4 justify-center items-center'>
             <ul className='hidden md:flex'>
 
-            <li className='p-4'><a href='/'>Home</a></li>
-            <li className='p-4'><a href='/lawyers'>Lawyers</a></li>
-            <li className='p-4'>About us</li>
+            <li className='p-4'><a href='/'>Accueil</a></li>
+            <li className='p-4'><a href='/lawyers'>Avocats</a></li>
+            <li className='p-4'>À propos de nous</li>
             <li className='p-4'>Contact</li>
 
             </ul>
-           <Button />
-
+            
+            {(!currentUser) && <Button />}
+            {session ? '' : <Button/>}
+   
+       <div className='pl-8   flex justify-center items-center'>
+        <DropdownButton/>
+        </div>
                     
         </div>
         <div onClick={handleNav} className='block md:hidden'>
