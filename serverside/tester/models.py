@@ -73,7 +73,7 @@ class Appointment(models.Model):
     sent = models.BooleanField(default=True)
     accepted = models.BooleanField(default=False)
     def __str__(self):
-        return str(self.time)
+        return str(self.id)
 
 
     
@@ -106,4 +106,3 @@ class Notification(models.Model):
 
 Lawyer._meta.get_field('groups').remote_field.related_name = 'customuser_groups'
 Lawyer._meta.get_field('user_permissions').remote_field.related_name = 'customuser_user_permissions'
-

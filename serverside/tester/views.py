@@ -6,11 +6,25 @@ filepath = 'C:\\Users\\LENOVO\\Desktop\\gl\\serverside\\exper\\settings.py'
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "exper.settings")  # Adjust the path accordingly
 django.setup()
 from django.shortcuts import render
+import random
 
 # Create your views here.
 
 def test(request):
+    lawyers = Lawyer.objects.all()
 
+        # for lawyer in lawyers:
+            # Generate a random phone number (you can customize this logic)
+    
+  
+    for lawyer in lawyers:
+        # Generate a random phone number with the first digit as '0'
+        random_phone = '0' +''.join(random.choices('123456789', k=1)) + ''.join(random.choices('0123456789', k=8))
+        # Assign the random phone number to the lawyer instance
+        lawyer.phone = random_phone
+        lawyer.description = "This is a default description"
+        lawyer.cv = "Lawyer"
+        lawyer.save()
     # Calender.objects.all().delete()
     # from datetime import datetime, timedelta
     # from django.utils import timezone
@@ -309,6 +323,7 @@ from rest_framework.response import Response
 from .models import Review
 from .serializers import ReviewSerializer
 from .models import GoogleUser, Lawyer
+from rest_framework.authentication import TokenAuthentication
 
 class ReviewCreateView(generics.GenericAPIView):
     serializer_class = ReviewSerializer3
@@ -380,14 +395,14 @@ class LawyerReviewsView2(generics.ListAPIView):
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
-        # Get the lawyer_id from the URL parameters
         lawyer_id = self.kwargs['lawyer_id']
-
-        # Filter reviews based on the provided lawyer_id
-        queryset = Review.objects.filter(lawyerr_id=lawyer_id)
-
-
+        queryset = Review.objects.filter(lawyerr_id=lawyer_id).select_related('userr')
         return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 
@@ -496,7 +511,6 @@ class CalenderLawyerView(generics.UpdateAPIView):
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 class LawyerLogoutView(APIView):
@@ -552,7 +566,7 @@ class LawyerRequestCalenderView(generics.ListAPIView):
 class AppFormView(generics.CreateAPIView):
     
     serializer_class = AppSerializer
-    permission_classes = [permissions.AllowAny]
+    # permission_classes = [IsVerifiedUser]
 
     def create(self, request, *args, **kwargs):
         # Assuming 'google_user', 'law', 'time', and 'date_created' are present in the request data
@@ -560,7 +574,7 @@ class AppFormView(generics.CreateAPIView):
         lawyer_id = request.data.get('law', None)
         time = request.data.get('time', None)
         date_created = request.data.get('date_created', None)
-
+        print(time)
         # Additional validation or checks based on your requirements
         print(request.data)
         # Extract the instance based on google_user, law, time, and date_created
@@ -584,21 +598,55 @@ class AppFormView(generics.CreateAPIView):
 
 class LawyerAppsAPIView(generics.ListAPIView):
     serializer_class = AppSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+    # authentication_classes = [TokenAuthentication]
+
 
     def get_queryset(self):
-        print("test")
         # Get the lawyer_id from the URL parameters
         lawyer_id = self.kwargs['lawyer_id']
-        print(lawyer_id)
-        # Filter reviews based on the provided lawyer_id
-        queryset = Appointment.objects.filter(law=lawyer_id,sent=False)
+        
+        # Filter appointments based on the provided lawyer_id
+        queryset = Appointment.objects.filter(law=lawyer_id, sent=False)
+
+        # Include the google_user name in each instance
+        queryset = queryset.select_related('google_user')
 
         return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        
+        # Serialize the queryset
+        serializer = self.get_serializer(queryset, many=True)
+
+        # Extract google_user.name and include it in the response
+        data = []
+        for item in serializer.data:
+            google_user = item.get('google_user', None)
+
+            if isinstance(google_user, dict):
+                google_user_name = google_user.get('name')
+            elif isinstance(google_user, int):
+                # Assuming google_user is the ID, you might need to fetch the corresponding GoogleUser instance
+                try:
+                    google_user_instance = GoogleUser.objects.get(pk=google_user)
+                    google_user_name = google_user_instance.name
+                except GoogleUser.DoesNotExist:
+                    google_user_name = None
+            else:
+                google_user_name = None
+
+            item['google_user_name'] = google_user_name
+            data.append(item)
+
+        return Response(data)
 
 class AppAcceptView(generics.UpdateAPIView):
     queryset = Appointment.objects.all()
     serializer_class = AppSerializer
-    permission_classes = [permissions.AllowAny]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
         # Assuming 'google_user', 'law', 'time', and 'date_created' are present in the request data
@@ -608,6 +656,10 @@ class AppAcceptView(generics.UpdateAPIView):
         date_created = request.data.get('date_created', None)
         # Additional validation or checks based on your requirements
         print(request.data)
+        print(google_user_id)
+        print(lawyer_id)
+        print(time)
+        print(date_created)
         # Extract the instance based on google_user, law, time, and date_created
         try:
             instance = Appointment.objects.get(
@@ -644,7 +696,8 @@ class AppAcceptView(generics.UpdateAPIView):
 class AppRefuseView(generics.UpdateAPIView):
     queryset = Appointment.objects.all()
     serializer_class = AppSerializer
-    permission_classes = [permissions.AllowAny]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
         # Assuming 'google_user', 'law', 'time', and 'date_created' are present in the request data
@@ -713,6 +766,7 @@ class NotifView(generics.ListAPIView):
 
 class NotifView2(generics.ListAPIView):
     serializer_class = NoitfSerializer
+    permission_classes = [IsVerifiedUser]
 
     def get_queryset(self):
         print("test")

@@ -21,9 +21,18 @@ class LawyerSerializer(serializers.ModelSerializer):
                   ,'twitter','linkedin','category','description','cv']
 
 class ReviewSerializer(serializers.ModelSerializer):
+    userr = serializers.SerializerMethodField()
     class Meta:
         model = Review
         fields = ['lawyerr', 'rating', 'comment','userr']
+    def get_userr(self, obj):
+        userr = obj.userr
+        return {
+            'id': userr.id,
+            'name': userr.name,
+            'email': userr.email,
+            # Include other fields as needed
+        }
 
 class ReviewSerializer2(serializers.ModelSerializer):
     class Meta:
@@ -76,9 +85,15 @@ class CalenderSerializer3(serializers.ModelSerializer):
         fields = ['id', 'empty_waiting','date_created','time','law','google_user','occupied_inavailable']
 
 class AppSerializer(serializers.ModelSerializer):
+    google_user_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Appointment
-        fields = ['id', 'sent','accepted','time','law','google_user','date_created']
+        fields = ['id', 'sent', 'accepted', 'time', 'law', 'google_user', 'date_created', 'google_user_name']
+
+    def get_google_user_name(self, obj):
+        google_user = obj.google_user
+        return google_user.name if google_user else None
 
 class NoitfSerializer(serializers.ModelSerializer):
     class Meta:
