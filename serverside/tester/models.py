@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser,Group,Permission
 # Create your models here.
 class Lawyer(AbstractUser):
-    # Add your additional fields
+    #This model represents the Lawyer 
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length = 10,default = "0000000000")
     adress = models.CharField(max_length=100)
@@ -20,16 +20,14 @@ class Lawyer(AbstractUser):
     def __str__(self):
         return str(self.id)
     
-
-
 class GoogleUser(AbstractUser):
+    #This model represents the googleuser
     name = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField()
     def __str__(self):
         return str(self.id)
 
-
-class Calender(models.Model):
+class Calender(models.Model): #this model is no longer used
     law = models.ForeignKey(Lawyer, on_delete=models.CASCADE, related_name='cal')
     google_user = models.ForeignKey(GoogleUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='calendars')
     date_created = models.DateField()
@@ -52,7 +50,7 @@ class Calender(models.Model):
     def __str__(self):
         return str(self.time)
 
-class Appointment(models.Model):
+class Appointment(models.Model): 
     law = models.ForeignKey(Lawyer, on_delete=models.CASCADE, related_name='app')
     google_user = models.ForeignKey(GoogleUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='apps')
     date_created = models.DateField()
@@ -70,13 +68,11 @@ class Appointment(models.Model):
         ('17:00 - 18:00 ', '17:00 - 18:00'),
     ]
     time = models.CharField(max_length=50, choices=worktimes)
-    sent = models.BooleanField(default=True)
+    sent = models.BooleanField(default=True) #This boolean is used to verify if the Lawyer has responded to the Appointment request or not
+    #in other words it is used to determine if the Appointment request has been treated or not
     accepted = models.BooleanField(default=False)
     def __str__(self):
         return str(self.id)
-
-
-    
 
 class Review(models.Model):
     lawyerr = models.ForeignKey(Lawyer, on_delete=models.CASCADE, related_name='reviews',blank=True, null=True)
@@ -85,7 +81,7 @@ class Review(models.Model):
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
-class Notification(models.Model):
+class Notification(models.Model):#This model is used to notify the GoogleUser if their Appointment request has been accepted of refused by the Lawyer
     userr = models.ForeignKey(GoogleUser, on_delete=models.CASCADE, related_name='revddd')
     text = models.CharField(max_length=400)
     date_created = models.DateField()
