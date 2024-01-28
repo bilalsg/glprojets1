@@ -40,7 +40,14 @@ urlpatterns = [
     path('calender/update2', views.CalenderLawyerView.as_view(), name='calender-update2'),
     path('logout/', views.LawyerLogoutView.as_view(), name='lawyer-logout'),
     path('requests/', views.LawyerRequestCalenderView.as_view(), name='lawyedr-logout'),
+    path('appform/', views.AppFormView.as_view(), name='lawyedr-logoutd'),
+    path('reqs/<int:lawyer_id>/', views.LawyerAppsAPIView.as_view(), name='lawyedr-logoutdd'),
 
+    path('accept/', views.AppAcceptView.as_view(), name='lawyedr-logoudtd'),
+
+    path('refuse/', views.AppRefuseView.as_view(), name='lawyedr-logdddoutd'),
+
+    path('notif/<int:user_id>/', views.NotifView2.as_view(), name='lawyedrddd-logoutdd'),
 ]
 
 urlpatterns += router.urls

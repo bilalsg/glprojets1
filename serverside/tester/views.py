@@ -386,6 +386,7 @@ class LawyerReviewsView2(generics.ListAPIView):
         # Filter reviews based on the provided lawyer_id
         queryset = Review.objects.filter(lawyerr_id=lawyer_id)
 
+
         return queryset
 
 
@@ -545,4 +546,180 @@ class LawyerRequestCalenderView(generics.ListAPIView):
             empty_waiting=False,
             occupied_inavailable=False
         )
+        return queryset
+    
+
+class AppFormView(generics.CreateAPIView):
+    
+    serializer_class = AppSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        # Assuming 'google_user', 'law', 'time', and 'date_created' are present in the request data
+        google_user_idd = request.data.get('google_user', None)
+        lawyer_id = request.data.get('law', None)
+        time = request.data.get('time', None)
+        date_created = request.data.get('date_created', None)
+
+        # Additional validation or checks based on your requirements
+        print(request.data)
+        # Extract the instance based on google_user, law, time, and date_created
+        
+        instance = Appointment.objects.create(
+                google_user_id=google_user_idd,
+                law_id=lawyer_id,
+                time=time,
+                date_created=date_created,
+                sent=False,
+                accepted=False
+            )
+
+        
+
+        
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class LawyerAppsAPIView(generics.ListAPIView):
+    serializer_class = AppSerializer
+
+    def get_queryset(self):
+        print("test")
+        # Get the lawyer_id from the URL parameters
+        lawyer_id = self.kwargs['lawyer_id']
+        print(lawyer_id)
+        # Filter reviews based on the provided lawyer_id
+        queryset = Appointment.objects.filter(law=lawyer_id,sent=False)
+
+        return queryset
+
+class AppAcceptView(generics.UpdateAPIView):
+    queryset = Appointment.objects.all()
+    serializer_class = AppSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def update(self, request, *args, **kwargs):
+        # Assuming 'google_user', 'law', 'time', and 'date_created' are present in the request data
+        google_user_id = request.data.get('google_user', None)
+        lawyer_id = request.data.get('law', None)
+        time = request.data.get('time', None)
+        date_created = request.data.get('date_created', None)
+        # Additional validation or checks based on your requirements
+        print(request.data)
+        # Extract the instance based on google_user, law, time, and date_created
+        try:
+            instance = Appointment.objects.get(
+                google_user_id=google_user_id,
+                law_id=lawyer_id,
+                time=time,
+                date_created=date_created
+            )
+        except Appointment.DoesNotExist:
+            return Response({'detail': 'App not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Update the fields
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        instance.accepted = True
+        instance.sent = True
+        instance.google_user = serializer.validated_data['google_user']
+        instance.save()
+
+        notification = Notification.objects.create(
+            userr=instance.google_user,
+            date_created=instance.date_created,
+            time=instance.time,
+            text='Your appointment has been accepted!'
+        )
+
+        response_data = {
+            'message': 'Appointment accepted successfully!',
+            'data': serializer.data
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+class AppRefuseView(generics.UpdateAPIView):
+    queryset = Appointment.objects.all()
+    serializer_class = AppSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def update(self, request, *args, **kwargs):
+        # Assuming 'google_user', 'law', 'time', and 'date_created' are present in the request data
+        google_user_id = request.data.get('google_user', None)
+        lawyer_id = request.data.get('law', None)
+        time = request.data.get('time', None)
+        date_created = request.data.get('date_created', None)
+        # Additional validation or checks based on your requirements
+        print(request.data)
+        # Extract the instance based on google_user, law, time, and date_created
+        try:
+            instance = Appointment.objects.get(
+                google_user_id=google_user_id,
+                law_id=lawyer_id,
+                time=time,
+                date_created=date_created
+            )
+        except Appointment.DoesNotExist:
+            return Response({'detail': 'App not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Update the fields
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        instance.accepted = False
+        instance.sent = True
+        instance.google_user = serializer.validated_data['google_user']
+        instance.save()
+
+        notification = Notification.objects.create(
+            userr=instance.google_user,
+            date_created=instance.date_created,
+            time=instance.time,
+            text='Your appointment has been refused!'
+        )
+
+        response_data = {
+            'message': 'Appointment refused unfortunately!',
+            'data': serializer.data
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+class NotifView(generics.ListAPIView):
+    serializer_class = NoitfSerializer
+    permission_classes = [IsVerifiedUser]
+
+    def post(self, request, *args, **kwargs):
+        # Extract data from the request
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # Get user_id from the 'X-User-ID' header
+            user_id = request.headers.get('X-User-ID', None)
+            
+            try:
+                # Retrieve the user instance based on the user ID
+                user = GoogleUser.objects.get(id=user_id)
+
+                # Filter Notification instances based on the user
+                queryset = Notification.objects.filter(userr=user)
+                return queryset
+
+            except GoogleUser.DoesNotExist:
+                return Response("Invalid user ID", status=status.HTTP_400_BAD_REQUEST)
+
+
+class NotifView2(generics.ListAPIView):
+    serializer_class = NoitfSerializer
+
+    def get_queryset(self):
+        print("test")
+        # Get the lawyer_id from the URL parameters
+        user_idd = self.kwargs['user_id']
+        
+        # Filter reviews based on the provided lawyer_id
+        queryset = Notification.objects.filter(userr=user_idd)
+
         return queryset

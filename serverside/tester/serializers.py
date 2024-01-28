@@ -74,3 +74,14 @@ class CalenderSerializer3(serializers.ModelSerializer):
     class Meta:
         model = Calender
         fields = ['id', 'empty_waiting','date_created','time','law','google_user','occupied_inavailable']
+
+class AppSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Appointment
+        fields = ['id', 'sent','accepted','time','law','google_user','date_created']
+
+class NoitfSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ['id', 'userr','text','time','date_created']
+

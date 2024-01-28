@@ -51,6 +51,31 @@ class Calender(models.Model):
     occupied_inavailable = models.BooleanField(default=False)
     def __str__(self):
         return str(self.time)
+
+class Appointment(models.Model):
+    law = models.ForeignKey(Lawyer, on_delete=models.CASCADE, related_name='app')
+    google_user = models.ForeignKey(GoogleUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='apps')
+    date_created = models.DateField()
+    worktimes = [
+        ('7:00  - 8:00 ', '7:00  - 8:00'),
+        ('8:00  - 9:00 ', '8:00  - 9:00'),
+        ('9:00  - 10:00 ', '9:00  - 10:00'),
+        ('10:00 - 11:00 ', '10:00 - 11:00'),
+        ('11:00 - 12:00 ', '11:00 - 12:00'),
+        ('12:00 - 13:00 ', '12:00 - 13:00'),
+        ('13:00 - 14:00 ', '13:00 - 14:00'),
+        ('14:00 - 15:00 ', '14:00 - 15:00'),
+        ('15:00 - 16:00 ', '15:00 - 16:00'),
+        ('16:00 - 17:00 ', '16:00 - 17:00'),
+        ('17:00 - 18:00 ', '17:00 - 18:00'),
+    ]
+    time = models.CharField(max_length=50, choices=worktimes)
+    sent = models.BooleanField(default=True)
+    accepted = models.BooleanField(default=False)
+    def __str__(self):
+        return str(self.time)
+
+
     
 
 class Review(models.Model):
@@ -59,6 +84,25 @@ class Review(models.Model):
     rating = models.IntegerField()
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+class Notification(models.Model):
+    userr = models.ForeignKey(GoogleUser, on_delete=models.CASCADE, related_name='revddd')
+    text = models.CharField(max_length=400)
+    date_created = models.DateField()
+    worktimes = [
+        ('7:00  - 8:00 ', '7:00  - 8:00'),
+        ('8:00  - 9:00 ', '8:00  - 9:00'),
+        ('9:00  - 10:00 ', '9:00  - 10:00'),
+        ('10:00 - 11:00 ', '10:00 - 11:00'),
+        ('11:00 - 12:00 ', '11:00 - 12:00'),
+        ('12:00 - 13:00 ', '12:00 - 13:00'),
+        ('13:00 - 14:00 ', '13:00 - 14:00'),
+        ('14:00 - 15:00 ', '14:00 - 15:00'),
+        ('15:00 - 16:00 ', '15:00 - 16:00'),
+        ('16:00 - 17:00 ', '16:00 - 17:00'),
+        ('17:00 - 18:00 ', '17:00 - 18:00'),
+    ]
+    time = models.CharField(max_length=50, choices=worktimes)
 
 Lawyer._meta.get_field('groups').remote_field.related_name = 'customuser_groups'
 Lawyer._meta.get_field('user_permissions').remote_field.related_name = 'customuser_user_permissions'
